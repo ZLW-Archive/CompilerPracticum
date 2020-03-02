@@ -20,6 +20,8 @@ public class Main {
             InputStream in = new FileInputStream(filename);
             Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();
+//            root.accept(new BuildSymbolTableVisitor(), allClassList);
+//            root.accept(new TypeCheckVisitor(), allClassList);
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (TokenMgrError e) {
