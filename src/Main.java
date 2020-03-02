@@ -1,6 +1,7 @@
 import java.io.*;
 import visitor.*;
 import syntaxtree.*;
+import symbol.*;
 
 class MyVisitor extends DepthFirstVisitor {
     public void visit(VarDeclaration n) {
@@ -18,7 +19,7 @@ public class Main {
             String filename = "src/TestFiles/Factorial.java";
             InputStream in = new FileInputStream(filename);
             Node root = new MiniJavaParser(in).Goal();
-            root.accept(new MyVisitor());
+            MType allClassList = new MClassList();
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (TokenMgrError e) {
