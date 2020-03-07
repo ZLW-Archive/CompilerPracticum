@@ -9,7 +9,8 @@ public class MClassList extends MType {
         super("ClassList");
     }
 
-    public boolean insert(String _key, MClass _value) {
+    public boolean insertClass(MClass _value) {
+        String _key = _value.getName();
         if (classHashMap.containsKey(_key)) {
             return false;
         }
@@ -17,7 +18,7 @@ public class MClassList extends MType {
         return true;
     }
 
-    public MClass get(String _key) {
+    public MClass getClass(String _key) {
         if (! classHashMap.containsKey(_key)) {
             return null;
         }

@@ -2,14 +2,22 @@ package symbol;
 
 public class MVar extends MIdentifier {
 
-    protected String parent; // who declare this var
-    protected String realType; // type is the type when declaration, realType is the "real" type
+    protected MType owner; // who declare this var
+    protected String realType; // type is the type when declaration, realType is the "real" type (type = new realType)
+    protected boolean init;
 
-    public MVar(String _type, String _name, int _col, int _row, String _parent, String _realType) {
+    public MVar(String _type, String _name, int _col, int _row, MType _owner, boolean _init) {
         super(_type, _name, _col, _row);
 
-        parent = _parent;
-        realType = _realType;
+        owner = _owner;
+        init = _init;
+
+        if (_init) {
+            realType = _type;
+        }
+        else {
+            realType = null;
+        }
     }
 
 }

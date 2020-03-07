@@ -15,4 +15,22 @@ public class MClass extends MIdentifier {
         extendClassName = _extendClassName; // if no extend, the _extendClassName is null
     }
 
+    public boolean insertMethod(MMethod method) {
+        String name = method.getName();
+        if (methodHashMap.containsKey(name)) {
+            return false;
+        }
+        methodHashMap.put(name, method);
+        return true;
+    }
+
+    public boolean insertVar(MVar var) {
+        String name = var.getName();
+        if (varHashMap.containsKey(name)) {
+            return false;
+        }
+        varHashMap.put(name, var);
+        return true;
+    }
+
 }
