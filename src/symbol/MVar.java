@@ -20,4 +20,8 @@ public class MVar extends MIdentifier {
         }
     }
 
+    public void init() {
+        init = true;
+    }
+
 }

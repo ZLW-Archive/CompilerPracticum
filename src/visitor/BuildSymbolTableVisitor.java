@@ -179,7 +179,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         String ownerType;
 
         curVarType = n.f0.accept(this, argu).getType();
-        varIdentifier = (MIdentifier) n.f1.accept(this, argu);
+        varIdentifier = (MIdentifier)n.f1.accept(this, argu);
         curVar = new MVar(curVarType, varIdentifier.getName(), varIdentifier.getCol(), varIdentifier.getRow(), argu, false);
         n.f2.accept(this, argu);
 
@@ -375,11 +375,31 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         MType _ret = null;
 
         MIdentifier varIdentifier;
+        MType exprReturnType;
+        boolean setInitFlag = false;
+        MVar curVar;
 
         varIdentifier = (MIdentifier)n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        exprReturnType = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
+
+        if (! varIdentifier.getType().equals(exprReturnType.getType())) {
+            System.out.printf("Assign type not match of %s at (%d, %d)", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
+        }
+
+        curVar = ((MMethod)argu).getLocalVar(varIdentifier.getName());
+        if (curVar != null) {
+            curVar.init();
+            setInitFlag = true;
+        }
+        else if (((MMethod)argu).getFormalPara(varIdentifier.getName()) != null) {
+            setInitFlag = true;
+        }
+        if (! setInitFlag) {
+            System.out.printf("Assign unknown variable of %s at (%d, %d)", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
+        }
+
         return _ret;
     }
 
@@ -393,13 +413,20 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
      * f6 -> ";"
      */
     public MType visit(ArrayAssignmentStatement n, MType argu) {
+//        TODO: the init of array? How does array work in Java? init when declare?
+//         what to check: init? left & right match? index is int?
         MType _ret = null;
-        n.f0.accept(this, argu);
+        
+        MIdentifier arrayVarIdentifier;
+        MType arrayIndexType;
+        MType assignVarType;
+
+        arrayVarIdentifier = (MIdentifier)n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        arrayIndexType = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
-        n.f5.accept(this, argu);
+        assignVarType = n.f5.accept(this, argu);
         n.f6.accept(this, argu);
         return _ret;
     }
