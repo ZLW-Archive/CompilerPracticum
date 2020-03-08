@@ -50,6 +50,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 
         MIdentifier classIdentifier;
         MClass mainClass;
+        MIdentifier mainIdentifier;
         MIdentifier formalParaIdentifier;
         MMethod mainMethod;
         MVar formalParaVar;
@@ -66,9 +67,9 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         n.f8.accept(this, argu);
         n.f9.accept(this, argu);
         n.f10.accept(this, argu);
+        mainIdentifier = new MIdentifier("Identifier", "main", n.f6.beginColumn, n.f6.beginLine);
         formalParaIdentifier = (MIdentifier) n.f11.accept(this, argu);
-//        TODO: the col and row here are not true. We need to get the info from "main"
-        mainMethod = new MMethod("main", formalParaIdentifier.getCol(), formalParaIdentifier.getRow(), mainClass, "void");
+        mainMethod = new MMethod("main", mainIdentifier.getCol(), mainIdentifier.getRow(), mainClass, "void");
         formalParaVar = new MVar("StringArray", formalParaIdentifier.getName(), formalParaIdentifier.getCol(), formalParaIdentifier.getRow(), mainMethod, true);
         mainMethod.insertFormalPara(formalParaVar);
         mainMethod.insertVar(formalParaVar);
