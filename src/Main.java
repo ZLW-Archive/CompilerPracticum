@@ -16,12 +16,13 @@ class MyVisitor extends DepthFirstVisitor {
 public class Main {
     public static void main(String[] args){
         try {
-            String filename = "src/TestFiles/Factorial.java";
+            String filename = "test_files/Factorial.java";
             InputStream in = new FileInputStream(filename);
             Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();
-//            root.accept(new BuildSymbolTableVisitor(), allClassList);
+            root.accept(new BuildSymbolTableVisitor(), allClassList);
 //            root.accept(new TypeCheckVisitor(), allClassList);
+            System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (TokenMgrError e) {

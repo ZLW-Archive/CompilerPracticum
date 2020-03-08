@@ -6,9 +6,8 @@ public class MMethod extends MIdentifier {
 
     protected MClass owner;
     protected String returnType;
-    protected HashMap<String, MVar> localVarHashMap = new HashMap<String, MVar>();
     protected HashMap<String, MVar> formalParaHashMap = new HashMap<String, MVar>();
-//    TODO: merge two hash map together. there is no difference. add another hash map for "temp" variable
+    protected HashMap<String, MVar> varHashMap = new HashMap<String, MVar>();
 
     public MMethod(String _name, int _col, int _row, MClass _owner, String _returnType) {
         super("Method", _name, _col, _row);
@@ -25,20 +24,20 @@ public class MMethod extends MIdentifier {
         return true;
     }
 
-    public boolean insertLocalVar(MVar var) {
+    public boolean insertVar(MVar var) {
         String name = var.getName();
-        if (localVarHashMap.containsKey(name)) {
+        if (varHashMap.containsKey(name)) {
             return false;
         }
-        localVarHashMap.put(name, var);
+        varHashMap.put(name, var);
         return true;
     }
 
-    public MVar getLocalVar(String key) {
-        if (!localVarHashMap.containsKey(key)) {
+    public MVar getVar(String key) {
+        if (!varHashMap.containsKey(key)) {
             return null;
         }
-        return localVarHashMap.get(key);
+        return varHashMap.get(key);
     }
 
     public MVar getFormalPara(String key) {
