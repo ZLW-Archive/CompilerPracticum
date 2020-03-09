@@ -33,4 +33,18 @@ public class MClass extends MIdentifier {
         return true;
     }
 
+    public MVar getVar(String name) {
+        if (! varHashMap.containsKey(name)) {
+            return null;
+        }
+        return varHashMap.get(name);
+    }
+
+    public MMethod getMethod(String _key) {
+        if (! methodHashMap.containsKey(_key)) {
+            return null;
+        }
+        return methodHashMap.get(_key);
+    }
+
 }

@@ -68,15 +68,15 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         n.f9.accept(this, argu);
         n.f10.accept(this, argu);
         mainIdentifier = new MIdentifier("Identifier", "main", n.f6.beginColumn, n.f6.beginLine);
-        formalParaIdentifier = (MIdentifier) n.f11.accept(this, argu);
         mainMethod = new MMethod("main", mainIdentifier.getCol(), mainIdentifier.getRow(), mainClass, "void");
+        formalParaIdentifier = (MIdentifier) n.f11.accept(this, mainMethod);
         formalParaVar = new MVar("StringArray", formalParaIdentifier.getName(), formalParaIdentifier.getCol(), formalParaIdentifier.getRow(), mainMethod, true);
         mainMethod.insertFormalPara(formalParaVar);
         mainMethod.insertVar(formalParaVar);
         n.f12.accept(this, argu);
         n.f13.accept(this, argu);
-        n.f14.accept(this, mainClass);
-        n.f15.accept(this, mainClass);
+        n.f14.accept(this, mainMethod);
+        n.f15.accept(this, mainMethod);
         n.f16.accept(this, argu);
         n.f17.accept(this, argu);
         mainClass.insertMethod(mainMethod);
@@ -176,15 +176,13 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         String curVarType;
         MIdentifier varIdentifier;
         MVar curVar;
-        String ownerType;
 
         curVarType = n.f0.accept(this, argu).getType();
         varIdentifier = (MIdentifier)n.f1.accept(this, argu);
         curVar = new MVar(curVarType, varIdentifier.getName(), varIdentifier.getCol(), varIdentifier.getRow(), argu, false);
         n.f2.accept(this, argu);
 
-        ownerType = argu.getType();
-        if (ownerType.equals("Method")) {
+        if (argu instanceof MMethod) {
             insertCurVarFlag = ((MMethod) argu).insertVar(curVar);
         } else {
 //            ownerType must be MClass
@@ -230,15 +228,11 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         n.f5.accept(this, argu);
         n.f6.accept(this, argu);
         n.f7.accept(this, curMethod);
-        n.f8.accept(this, argu);
+        n.f8.accept(this, curMethod);
         n.f9.accept(this, argu);
         n.f10.accept(this, argu);
         n.f11.accept(this, argu);
         n.f12.accept(this, argu);
-
-//        if (!declareReturnType.equals(realReturnType)) {
-//            System.out.printf("Return type not match in %s at (%d, %d)", curMethod.getName(), curMethod.getRow(), curMethod.getCol());
-//        }
 
         insertCurMethodFlag = ((MClass) argu).insertMethod(curMethod);
         if (!insertCurMethodFlag) {

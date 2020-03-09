@@ -47,4 +47,12 @@ public class MMethod extends MIdentifier {
         return formalParaHashMap.get(key);
     }
 
+    public MType getReturnType() {
+        return new MType(returnType);
+    }
+
+    public MClass getOwner() {
+        return owner;
+    }
+
 }

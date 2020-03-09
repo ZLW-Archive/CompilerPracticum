@@ -1,4 +1,6 @@
-class Factorial{
+package test;
+
+class Test{
     public static void main(String[] a){
         System.out.println(new Fac().ComputeFac(10));
     }
@@ -9,7 +11,8 @@ class Fac {
         int num_aux ;
         if (num < 1)
             num_aux = 1 ;
-        else {}
+        else
+            num_aux = num * (this.ComputeFac(num-1)) ;
         return num_aux ;
     }
 }

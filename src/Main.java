@@ -21,7 +21,7 @@ public class Main {
             Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();
             root.accept(new BuildSymbolTableVisitor(), allClassList);
-//            root.accept(new TypeCheckVisitor(), allClassList);
+            root.accept(new TypeCheckVisitor(), allClassList);
             System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
