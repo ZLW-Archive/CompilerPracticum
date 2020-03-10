@@ -291,7 +291,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         varIdentifier = (MIdentifier)n.f0.accept(this, argu);
         exprReturnType = n.f2.accept(this, argu);
 
-        if (! varIdentifier.getType().equals(exprReturnType.getType())) {
+//        if (! varIdentifier.getType().equals(exprReturnType.getType())) {
+//            System.out.printf("Assign type not match of %s at (%d, %d)\n", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
+//        }
+        if (! allClassList.checkExtendAssign(varIdentifier.getType(), exprReturnType.getType())) {
             System.out.printf("Assign type not match of %s at (%d, %d)\n", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
         }
 

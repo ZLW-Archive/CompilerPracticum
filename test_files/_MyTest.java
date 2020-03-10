@@ -1,21 +1,22 @@
-class MyTest{
-    public static void main(String[] s){
+class test56{
+    public static void main(String[] a){
+        System.out.println(new A().start());
     }
 }
 
-class a {
-    public int x () { return 1; }
+class B extends A{
+
 }
 
-class b extends a {
-    int t;
-    public int x(int t) {
-        return 1;
-    }
+class A{
 
-    public int y () {
-        int t;
-        t = this.x();
-        return 1;
+    A a;
+    B b;
+
+    public int start(){
+
+        a = b;
+
+        return 0;
     }
 }

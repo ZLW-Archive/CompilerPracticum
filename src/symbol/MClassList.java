@@ -69,4 +69,28 @@ public class MClassList extends MType {
         return false;
     }
 
+    public boolean checkExtendAssign(String left, String right) {
+//        left = right
+        if ((!classHashMap.containsKey(left)) | (!classHashMap.containsKey(right))) {
+            return left.equals(right);
+        }
+
+        String target = left;
+        String step = right;
+
+        while (true) {
+            if (target.equals(step)) {
+                return true;
+            }
+            else if (classHashMap.get(step).extendClassName != null) {
+                step = classHashMap.get(step).extendClassName;
+            }
+            else {
+                break;
+            }
+        }
+        return false;
+
+    }
+
 }
