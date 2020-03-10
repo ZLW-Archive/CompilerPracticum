@@ -10,7 +10,7 @@ public class MClass extends MIdentifier {
     protected String extendClassName; // this is parent class's name
 
     public MClass(String _name, int _col, int _row, String _extendClassName) {
-        super("Class", _name,  _col, _row);
+        super(_name, _name,  _col, _row);
 
         extendClassName = _extendClassName; // if no extend, the _extendClassName is null
     }

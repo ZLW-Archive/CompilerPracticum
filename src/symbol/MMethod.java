@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 public class MMethod extends MIdentifier {
 
-    protected MClass owner;
+    protected MClass ownerClass;
     protected String returnType;
     protected HashMap<String, MVar> formalParaHashMap = new HashMap<String, MVar>();
     protected HashMap<String, MVar> varHashMap = new HashMap<String, MVar>();
 
     public MMethod(String _name, int _col, int _row, MClass _owner, String _returnType) {
-        super("Method", _name, _col, _row);
-        owner = _owner;
+        super(_name, _name, _col, _row);
+        ownerClass = _owner;
         returnType = _returnType;
     }
 
@@ -34,10 +34,13 @@ public class MMethod extends MIdentifier {
     }
 
     public MVar getVar(String key) {
-        if (!varHashMap.containsKey(key)) {
-            return null;
+        if (varHashMap.containsKey(key)) {
+            return varHashMap.get(key);
         }
-        return varHashMap.get(key);
+        else if (ownerClass.getVar(key) != null) {
+            return ownerClass.getVar(key);
+        }
+        return null;
     }
 
     public MVar getFormalPara(String key) {
@@ -51,8 +54,8 @@ public class MMethod extends MIdentifier {
         return new MType(returnType);
     }
 
-    public MClass getOwner() {
-        return owner;
+    public MClass getOwnerClass() {
+        return ownerClass;
     }
 
 }

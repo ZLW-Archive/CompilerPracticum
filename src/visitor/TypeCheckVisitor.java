@@ -130,6 +130,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         return _ret;
     }
 
+
     /**
      * f0 -> "public"
      * f1 -> Type()
@@ -184,7 +185,8 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
      *       | Identifier()
      */
     public MType visit(Type n, MType argu) {
-        return n.f0.accept(this, argu);
+//        simple type return directly, identifier type: find in allClassList
+        return n.f0.accept(this, allClassList);
     }
 
     /**
@@ -248,7 +250,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
                 System.out.printf("Unknown class %s at (%d, %d)\n", name, n.f0.beginLine, n.f0.beginColumn);
             }
             else {
-                curType = "Class";
+                curType = name;
             }
         }
 
@@ -303,7 +305,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
             System.out.printf("Array assign for un-array variable of %s at (%d, %d)\n", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
         }
 
-        if (! arrayVarIdentifier.getType().equals(assignVarType.getType())) {
+        if (! assignVarType.getType().equals("Int")) {
             System.out.printf("Assign type not match of %s at (%d, %d)\n", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
         }
 
@@ -608,6 +610,11 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
             callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
 
         }
+        else if (allClassList.getClass(primaryExprReturn.getType()) != null) {
+            MClass curVarClass = this.allClassList.getClass(primaryExprReturn.getType());
+            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
+            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
+        }
         else {
             System.out.println("The obj cannot call a method.");
         }
@@ -668,7 +675,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         MClass ownerClass;
 
         ownerMethod = (MMethod)argu;
-        ownerClass = ownerMethod.getOwner();
+        ownerClass = ownerMethod.getOwnerClass();
 
         _ret = ownerClass;
 

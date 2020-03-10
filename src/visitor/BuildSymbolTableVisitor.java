@@ -336,7 +336,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
      */
     public MType visit(Identifier n, MType argu) {
         String name = n.f0.toString();
-        return new MIdentifier("Identifier", name, n.f0.beginColumn, n.f0.beginLine);
+        return new MIdentifier(name, name, n.f0.beginColumn, n.f0.beginLine);
     }
 
 
