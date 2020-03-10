@@ -60,4 +60,13 @@ public class MClassList extends MType {
         return cnt != classHashMap.size();
     }
 
+    public boolean findAllOverride() {
+        for (MClass x: classHashMap.values()) {
+            if (x.findOverride()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

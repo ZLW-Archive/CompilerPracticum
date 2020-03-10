@@ -36,7 +36,7 @@ public class MClass extends MIdentifier {
 
     public boolean insertMethod(MMethod method) {
         String name = method.getName();
-        if (methodHashMap.containsKey(name)) {
+        if (methodHashMap.containsKey(name) || (extendClass != null && extendClass.getMethod(name) != null)) {
             return false;
         }
         methodHashMap.put(name, method);
@@ -60,10 +60,25 @@ public class MClass extends MIdentifier {
     }
 
     public MMethod getMethod(String _key) {
-        if (! methodHashMap.containsKey(_key)) {
-            return null;
+        if (methodHashMap.containsKey(_key)) {
+            return methodHashMap.get(_key);
         }
-        return methodHashMap.get(_key);
-    }
+        else if (extendClass != null && extendClass.getMethod(_key) != null) {
+            return extendClass.getMethod(_key);
+        }
+        return null;
+     }
+
+     public boolean findOverride() {
+        if (extendClass == null) {
+            return false;
+        }
+        for (String methodName: methodHashMap.keySet()) {
+            if (extendClass.getMethod(methodName) != null) {
+                return true;
+            }
+        }
+        return false;
+     }
 
 }
