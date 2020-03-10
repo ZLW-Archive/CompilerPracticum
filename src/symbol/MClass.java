@@ -14,6 +14,7 @@ public class MClass extends MIdentifier {
         super(_name, _name,  _col, _row);
 
         extendClassName = _extendClassName; // if no extend, the _extendClassName is null
+        extendClass = null;
     }
 
     public boolean setExtendClass(MClassList allClassList) {
@@ -27,6 +28,10 @@ public class MClass extends MIdentifier {
             extendClass = allClassList.getClass(extendClassName);
             return true;
         }
+    }
+
+    public String getExtendClassName(){
+        return extendClassName;
     }
 
     public boolean insertMethod(MMethod method) {

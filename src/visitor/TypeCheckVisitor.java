@@ -20,11 +20,16 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
     public MType visit(Goal n, MType argu) {
         MType _ret = null;
         boolean setAllExtendClassFlag;
+        boolean existExtendLoopFlag;
 
         allClassList = (MClassList)argu;
         setAllExtendClassFlag = allClassList.setAllExtendClass();
-        if (! setAllExtendClassFlag) {
-            System.out.println("extend class error");
+        existExtendLoopFlag = allClassList.findExtendClassLoop();
+//        if (! setAllExtendClassFlag) {
+//            System.out.println("extend class error");
+//        }
+        if (existExtendLoopFlag) {
+            System.out.println("Exist extend loop");
         }
 
         n.f0.accept(this, argu);

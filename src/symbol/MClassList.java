@@ -2,6 +2,8 @@ package symbol;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MClassList extends MType {
     protected  HashMap<String, MClass> classHashMap = new HashMap<String, MClass>();
@@ -33,6 +35,29 @@ public class MClassList extends MType {
             _ret &= x.setExtendClass(this);
         }
         return _ret;
+    }
+
+    public boolean findExtendClassLoop() {
+        Queue<String> queue = new LinkedList<String>();
+        int cnt = 0;
+
+        for (MClass x: classHashMap.values()) {
+            if (x.extendClassName == null) {
+                queue.add(x.name);
+                cnt += 1;
+            }
+        }
+        while (! queue.isEmpty()) {
+            String independentClassName = queue.poll();
+            for (MClass x: classHashMap.values()) {
+                if (x.extendClassName != null && x.extendClassName.equals(independentClassName)) {
+                    queue.add(x.name);
+                    cnt += 1;
+                }
+            }
+        }
+
+        return cnt != classHashMap.size();
     }
 
 }
