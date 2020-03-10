@@ -8,11 +8,25 @@ public class MClass extends MIdentifier {
     protected HashMap<String, MMethod> methodHashMap = new HashMap<String, MMethod>();
 
     protected String extendClassName; // this is parent class's name
+    protected MClass extendClass;
 
     public MClass(String _name, int _col, int _row, String _extendClassName) {
         super(_name, _name,  _col, _row);
 
         extendClassName = _extendClassName; // if no extend, the _extendClassName is null
+    }
+
+    public boolean setExtendClass(MClassList allClassList) {
+        if (extendClassName == null) {
+            return true;
+        }
+        else if (allClassList.getClass(extendClassName) == null) {
+            return false;
+        }
+        else {
+            extendClass = allClassList.getClass(extendClassName);
+            return true;
+        }
     }
 
     public boolean insertMethod(MMethod method) {

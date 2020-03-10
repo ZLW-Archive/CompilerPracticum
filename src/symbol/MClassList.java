@@ -1,5 +1,6 @@
 package symbol;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class MClassList extends MType {
@@ -25,6 +26,13 @@ public class MClassList extends MType {
         return classHashMap.get(_key);
     }
 
-
+    public boolean setAllExtendClass() {
+        boolean _ret = true;
+        Collection<MClass> classCollection = classHashMap.values();
+        for (MClass x: classCollection ) {
+            _ret &= x.setExtendClass(this);
+        }
+        return _ret;
+    }
 
 }

@@ -19,8 +19,13 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
      */
     public MType visit(Goal n, MType argu) {
         MType _ret = null;
+        boolean setAllExtendClassFlag;
 
-        this.allClassList = (MClassList)argu;
+        allClassList = (MClassList)argu;
+        setAllExtendClassFlag = allClassList.setAllExtendClass();
+        if (! setAllExtendClassFlag) {
+            System.out.println("extend class error");
+        }
 
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
