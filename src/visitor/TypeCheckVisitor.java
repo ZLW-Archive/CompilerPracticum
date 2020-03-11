@@ -12,6 +12,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
     * */
 
     private MClassList allClassList;
+    private MMethod curFormalParaCheckMethod;
 
     /**
      * f0 -> MainClass()
@@ -652,8 +653,12 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
 //        else {
 //            ErrorPrint.print("The obj cannot call a method.");
 //        }
+        // TODO: check 1. formal para, argu should be call method, 2. parameter exist, argu should be cur method
 
-        n.f4.accept(this, callMethod);
+        curFormalParaCheckMethod = callMethod;
+        n.f4.accept(this, argu);
+        curFormalParaCheckMethod = null;
+
 
         _ret = callMethodReturnType;
 
@@ -671,13 +676,13 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
 
         boolean formalParaCheckFlag;
 
-        curMethod = (MMethod)argu;
+        curMethod = curFormalParaCheckMethod;
 
         curMethod.startCheckFormalPara();
-        firstExprReturnType = n.f0.accept(this, curMethod);
+        firstExprReturnType = n.f0.accept(this, argu);
         curMethod.checkingFormalPara(firstExprReturnType.getType(), allClassList);
 
-        n.f1.accept(this, curMethod);
+        n.f1.accept(this, argu);
 
         formalParaCheckFlag = curMethod.endCheckFormalPara();
 
@@ -697,7 +702,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         MType exprReturnType;
 
         exprReturnType = n.f1.accept(this, argu);
-        ((MMethod)argu).checkingFormalPara(exprReturnType.getType(), allClassList);
+        curFormalParaCheckMethod.checkingFormalPara(exprReturnType.getType(), allClassList);
 
         return _ret;
     }

@@ -3,20 +3,10 @@ import visitor.*;
 import syntaxtree.*;
 import symbol.*;
 
-class MyVisitor extends DepthFirstVisitor {
-    public void visit(VarDeclaration n) {
-        Identifier id = (Identifier)n.f1;
-        System.out.println("VarName: " + id.f0.toString());
-        n.f0.accept(this);
-        n.f1.accept(this);
-        n.f2.accept(this);
-    }
-}
-
 public class Main {
     public static void main(String[] args){
         try {
-            String filename = "test_files/_MyTest.java";
+            String filename = "test_files/TreeVisitor-error.java";
             InputStream in = new FileInputStream(filename);
             Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();
