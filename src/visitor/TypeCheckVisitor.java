@@ -597,53 +597,88 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         * TODO: checks:
         *  1. undefined method, object, class
         * */
-        MType _ret = null;
+        MType _ret;
 
         MType primaryExprReturn;
+
+        MClass curVarClass;
+
         MIdentifier callMethodIdentifier;
+        MMethod callMethod = null;
         MType callMethodReturnType = null;
 
-        primaryExprReturn = n.f0.accept(this, argu);
-//        callMethodIdentifier = (MIdentifier)n.f2.accept(this, (MClass));
-
         /*
-        * Three condition:
+        * Several conditions:
         *   1. a variable -> identifier -> look up in the hash map
         *   2. this -> class
         *   3. allocation call -> temp variable
+        *   4. just a type -> look for the type in the allClassList
         * */
+        primaryExprReturn = n.f0.accept(this, argu);
+        curVarClass = allClassList.getClass(primaryExprReturn.getType());
+        callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
 
-        if (primaryExprReturn instanceof MVar) {
-            MVar curVar = (MVar) primaryExprReturn;
-            MClass curVarClass = allClassList.getClass(curVar.getType());
-            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
-            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
-        }
-        else if (primaryExprReturn instanceof MClass) {
-            MClass curVarClass = (MClass) primaryExprReturn;
-            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
-            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
-        }
-        else if (primaryExprReturn instanceof MIdentifier) {
-            MIdentifier curVarIdentifier = (MIdentifier)primaryExprReturn;
-            MClass curVarClass = this.allClassList.getClass(curVarIdentifier.getType());
-            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
-            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
-
-        }
-        else if (allClassList.getClass(primaryExprReturn.getType()) != null) {
-            MClass curVarClass = this.allClassList.getClass(primaryExprReturn.getType());
-            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
-            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
-        }
-        else {
+        if (curVarClass == null) {
             ErrorPrint.print("The obj cannot call a method.");
         }
+        else {
+            callMethod = curVarClass.getMethod(callMethodIdentifier.getName()); // when get callMethodIdentifier, it guarantee the method exists
+            callMethodReturnType = callMethod.getReturnType();
+        }
 
-        n.f4.accept(this, argu);
+//        if (primaryExprReturn instanceof MVar) {
+//            MVar curVar = (MVar) primaryExprReturn;
+//            MClass curVarClass = allClassList.getClass(curVar.getType());
+//            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
+//            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
+//        }
+//        else if (primaryExprReturn instanceof MClass) {
+//            MClass curVarClass = (MClass) primaryExprReturn;
+//            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
+//            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
+//        }
+//        else if (primaryExprReturn instanceof MIdentifier) {
+//            MIdentifier curVarIdentifier = (MIdentifier)primaryExprReturn;
+//            MClass curVarClass = this.allClassList.getClass(curVarIdentifier.getType());
+//            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
+//            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
+//
+//        }
+//        else if (allClassList.getClass(primaryExprReturn.getType()) != null) {
+//            MClass curVarClass = this.allClassList.getClass(primaryExprReturn.getType());
+//            callMethodIdentifier = (MIdentifier)n.f2.accept(this, curVarClass);
+//            callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
+//        }
+//        else {
+//            ErrorPrint.print("The obj cannot call a method.");
+//        }
+
+        n.f4.accept(this, callMethod);
 
         _ret = callMethodReturnType;
 
+        return _ret;
+    }
+
+    /**
+     * f0 -> Expression()
+     * f1 -> ( ExpressionRest() )*
+     */
+    public MType visit(ExpressionList n, MType argu) {
+        MType _ret = null;
+        n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
+        return _ret;
+    }
+
+    /**
+     * f0 -> ","
+     * f1 -> Expression()
+     */
+    public MType visit(ExpressionRest n, MType argu) {
+        MType _ret = null;
+        n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
         return _ret;
     }
 

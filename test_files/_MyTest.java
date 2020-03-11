@@ -1,12 +1,16 @@
-class test56{
+class Factorial{
     public static void main(String[] a){
+        System.out.println((new Fac()).ComputeFac(10));
     }
 }
 
-class A {
-    public int x() {return 1;}
-}
-
-class B extends A {
-    public boolean x() {return 1<1;}
+class Fac {
+    public int ComputeFac(int num){
+        int num_aux ;
+        if (num < 1)
+            num_aux = 1 ;
+        else
+            num_aux = num * (this.ComputeFac(num-1)) ;
+        return num_aux ;
+    }
 }
