@@ -2,6 +2,7 @@ package visitor;
 
 import symbol.*;
 import syntaxtree.*;
+import minijava.ErrorPrint;
 
 public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 
@@ -82,7 +83,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         mainClass.insertMethod(mainMethod);
         insertMainClassFlag = ((MClassList) argu).insertClass(mainClass);
         if (!insertMainClassFlag) {
-            System.out.printf("Duplicate class declaration of MainClass at (%d, %d)\n", mainClass.getRow(), mainClass.getCol());
+            ErrorPrint.print("Duplicate class declaration of MainClass at (%d, %d)", mainClass.getRow(), mainClass.getCol());
         }
         return _ret;
     }
@@ -122,7 +123,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 
         insertCurClassFlag = ((MClassList) argu).insertClass(curClass);
         if (!insertCurClassFlag) {
-            System.out.printf("Duplicate class declaration of %s at (%d, %d)\n", curClass.getName(), curClass.getRow(), curClass.getCol());
+            ErrorPrint.print("Duplicate class declaration of %s at (%d, %d)", curClass.getName(), curClass.getRow(), curClass.getCol());
         }
 
         return _ret;
@@ -158,7 +159,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 
         insertCurClassFlag = ((MClassList) argu).insertClass(curClass);
         if (!insertCurClassFlag) {
-            System.out.printf("Duplicate class declaration of %s at (%d, %d)\n", curClass.getName(), curClass.getRow(), curClass.getCol());
+            ErrorPrint.print("Duplicate class declaration of %s at (%d, %d)", curClass.getName(), curClass.getRow(), curClass.getCol());
         }
 
         return _ret;
@@ -189,7 +190,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
             insertCurVarFlag = ((MClass) argu).insertVar(curVar);
         }
         if (!insertCurVarFlag) {
-            System.out.printf("Duplicate variable declaration of %s at (%d, %d)\n", curVar.getName(), curVar.getRow(), curVar.getCol());
+            ErrorPrint.print("Duplicate variable declaration of %s at (%d, %d)", curVar.getName(), curVar.getRow(), curVar.getCol());
         }
 
         return _ret;
@@ -236,7 +237,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 
         insertCurMethodFlag = ((MClass) argu).insertMethod(curMethod);
         if (!insertCurMethodFlag) {
-            System.out.printf("Duplicate method declaration of %s at (%d, %d)\n", curMethod.getName(), curMethod.getRow(), curMethod.getCol());
+            ErrorPrint.print("Duplicate method declaration of %s at (%d, %d)", curMethod.getName(), curMethod.getRow(), curMethod.getCol());
         }
 
         return _ret;
@@ -271,7 +272,7 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 
         insertFormalParaFlag = ((MMethod) argu).insertFormalPara(curFormalPara) && ((MMethod) argu).insertVar(curFormalPara);
         if (!insertFormalParaFlag) {
-            System.out.printf("Duplicate formal parameter of %s at (%d, %d)\n", curFormalPara.getName(), curFormalPara.getRow(), curFormalPara.getCol());
+            ErrorPrint.print("Duplicate formal parameter of %s at (%d, %d)", curFormalPara.getName(), curFormalPara.getRow(), curFormalPara.getCol());
         }
 
         return _ret;

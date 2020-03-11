@@ -16,7 +16,7 @@ class MyVisitor extends DepthFirstVisitor {
 public class Main {
     public static void main(String[] args){
         try {
-            String filename = "test_files/_MyTest.java";
+            String filename = "test_files/MoreThan4-error.java";
             InputStream in = new FileInputStream(filename);
             Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();

@@ -2,6 +2,7 @@ package visitor;
 
 import symbol.*;
 import syntaxtree.*;
+import minijava.ErrorPrint;
 
 public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
     /*
@@ -29,13 +30,13 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         existOverrideFlag = allClassList.findAllOverride();
 
 //        if (! setAllExtendClassFlag) {
-//            System.out.println("extend class error");
+//            ErrorPrint.print("extend class error");
 //        }
         if (existExtendLoopFlag) {
-            System.out.println("Exist extend loop");
+            ErrorPrint.print("Exist extend loop");
         }
         if (existOverrideFlag) {
-            System.out.println("Exist override");
+            ErrorPrint.print("Exist override");
         }
 
         n.f0.accept(this, argu);
@@ -136,7 +137,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         if (extendClassIdentifier.getName().equals(curClassIdentifier.getName()) |      // self extend
                 ((MClassList)argu).getClass(extendClassIdentifier.getName()) == null    // extend to an unknown class
         ) {
-            System.out.printf("Extend error of %s at (%d, %d)\n", curClassIdentifier.getName(), curClassIdentifier.getRow(), curClassIdentifier.getCol());
+            ErrorPrint.print("Extend error of %s at (%d, %d)", curClassIdentifier.getName(), curClassIdentifier.getRow(), curClassIdentifier.getCol());
         }
 
         curClass = ((MClassList)argu).getClass(curClassIdentifier.getName());
@@ -188,7 +189,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         realReturnType = n.f10.accept(this, curMethod);
 
         if (! (declareReturnType.getType()).equals(realReturnType.getType())) {
-            System.out.printf("Return type not match of %s at (%d, %d)\n", curMethod.getName(), curMethod.getRow(), curMethod.getCol());
+            ErrorPrint.print("Return type not match of %s at (%d, %d)", curMethod.getName(), curMethod.getRow(), curMethod.getCol());
         }
 
         return _ret;
@@ -248,7 +249,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
                 curType = ((MMethod)argu).getVar(name).getType();
             }
             else {
-                System.out.printf("Unknown variable %s at (%d, %d) in method\n", name, n.f0.beginLine, n.f0.beginColumn);
+                ErrorPrint.print("Unknown variable %s at (%d, %d) in method", name, n.f0.beginLine, n.f0.beginColumn);
             }
         }
         else if (argu instanceof MClass) {
@@ -259,12 +260,12 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
                 curType = "Method";
             }
             else {
-                System.out.printf("Unknown variable or method %s at (%d, %d) in class\n", name, n.f0.beginLine, n.f0.beginColumn);
+                ErrorPrint.print("Unknown variable or method %s at (%d, %d) in class", name, n.f0.beginLine, n.f0.beginColumn);
             }
         }
         else if (argu instanceof MClassList) {
             if (((MClassList)argu).getClass(name) == null) {
-                System.out.printf("Unknown class %s at (%d, %d)\n", name, n.f0.beginLine, n.f0.beginColumn);
+                ErrorPrint.print("Unknown class %s at (%d, %d)", name, n.f0.beginLine, n.f0.beginColumn);
             }
             else {
                 curType = name;
@@ -292,10 +293,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         exprReturnType = n.f2.accept(this, argu);
 
 //        if (! varIdentifier.getType().equals(exprReturnType.getType())) {
-//            System.out.printf("Assign type not match of %s at (%d, %d)\n", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
+//            ErrorPrint.print("Assign type not match of %s at (%d, %d)", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
 //        }
         if (! allClassList.checkExtendAssign(varIdentifier.getType(), exprReturnType.getType())) {
-            System.out.printf("Assign type not match of %s at (%d, %d)\n", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
+            ErrorPrint.print("Assign type not match of %s at (%d, %d)", varIdentifier.getName(), varIdentifier.getRow(), varIdentifier.getCol());
         }
 
         return _ret;
@@ -322,15 +323,15 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         assignVarType = n.f5.accept(this, argu);
 
         if (! arrayVarIdentifier.getType().equals("IntArray")) {
-            System.out.printf("Array assign for un-array variable of %s at (%d, %d)\n", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
+            ErrorPrint.print("Array assign for un-array variable of %s at (%d, %d)", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
         }
 
         if (! assignVarType.getType().equals("Int")) {
-            System.out.printf("Assign type not match of %s at (%d, %d)\n", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
+            ErrorPrint.print("Assign type not match of %s at (%d, %d)", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
         }
 
         if (! arrayIndexType.getType().equals("Int")) {
-            System.out.printf("Array index is not int in %s at (%d, %d)\n", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
+            ErrorPrint.print("Array index is not int in %s at (%d, %d)", arrayVarIdentifier.getName(), arrayVarIdentifier.getRow(), arrayVarIdentifier.getCol());
         }
 
         return _ret;
@@ -355,7 +356,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         n.f6.accept(this, argu);
 
         if (! exprReturnType.getType().equals("Boolean")) {
-            System.out.println("If expression is not boolean");
+            ErrorPrint.print("If expression is not boolean");
         }
 
         return _ret;
@@ -377,7 +378,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         n.f4.accept(this, argu);
 
         if (! exprReturnType.getType().equals("Boolean")) {
-            System.out.println("While expression is not boolean");
+            ErrorPrint.print("While expression is not boolean");
         }
 
         return _ret;
@@ -398,7 +399,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         exprReturnType = n.f2.accept(this, argu);
 
         if (! exprReturnType.getType().equals("Int")) {
-            System.out.println("Print expression is not int");
+            ErrorPrint.print("Print expression is not int");
         }
 
         return _ret;
@@ -434,10 +435,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         rightType = n.f2.accept(this, argu);
 
         if (! leftType.getType().equals("Boolean")) {
-            System.out.println("And expression is not boolean");
+            ErrorPrint.print("And expression is not boolean");
         }
         if (! rightType.getType().equals("Boolean")) {
-            System.out.println("And expression is not boolean");
+            ErrorPrint.print("And expression is not boolean");
         }
 
         return _ret;
@@ -458,10 +459,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         rightType = n.f2.accept(this, argu);
 
         if (! leftType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
         if (! rightType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
 
         return _ret;
@@ -482,10 +483,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         rightType = n.f2.accept(this, argu);
 
         if (! leftType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
         if (! rightType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
 
         return _ret;
@@ -506,10 +507,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         rightType = n.f2.accept(this, argu);
 
         if (! leftType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
         if (! rightType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
 
         return _ret;
@@ -530,10 +531,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         rightType = n.f2.accept(this, argu);
 
         if (! leftType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
         if (! rightType.getType().equals("Int")) {
-            System.out.println("Arithmetic expression is not int");
+            ErrorPrint.print("Arithmetic expression is not int");
         }
 
         return _ret;
@@ -555,10 +556,10 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         indexType = n.f2.accept(this, argu);
 
         if (! curType.getType().equals("IntArray")) {
-            System.out.println("Look up an un-array variable");
+            ErrorPrint.print("Look up an un-array variable");
         }
         if (! indexType.getType().equals("Int")) {
-            System.out.println("Array index is not int");
+            ErrorPrint.print("Array index is not int");
         }
 
         return _ret;
@@ -577,7 +578,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         curType = n.f0.accept(this, argu);
 
         if (! curType.getType().equals("IntArray")) {
-            System.out.println("Acquire length to an un-array variable");
+            ErrorPrint.print("Acquire length to an un-array variable");
         }
 
         return _ret;
@@ -636,7 +637,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
             callMethodReturnType = (curVarClass.getMethod(callMethodIdentifier.getName())).getReturnType();
         }
         else {
-            System.out.println("The obj cannot call a method.");
+            ErrorPrint.print("The obj cannot call a method.");
         }
 
         n.f4.accept(this, argu);
@@ -717,7 +718,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         indexType = n.f3.accept(this, argu);
 
         if (! indexType.getType().equals("Int")) {
-            System.out.printf("Array index is not int at (%d, %d)\n", n.f2.beginLine, n.f2.beginColumn);
+            ErrorPrint.print("Array index is not int at (%d, %d)", n.f2.beginLine, n.f2.beginColumn);
         }
 
         return _ret;
@@ -754,7 +755,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
 
         exprReturnType = n.f1.accept(this, argu);
         if (! exprReturnType.getType().equals("Boolean")) {
-            System.out.printf("Not expression of an un-boolean target at (%d, %d)\n", n.f0.beginLine, n.f0.beginColumn);
+            ErrorPrint.print("Not expression of an un-boolean target at (%d, %d)", n.f0.beginLine, n.f0.beginColumn);
         }
 
         return _ret;

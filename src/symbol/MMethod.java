@@ -1,12 +1,14 @@
 package symbol;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 public class MMethod extends MIdentifier {
 
     protected MClass ownerClass;
     protected String returnType;
     protected HashMap<String, MVar> formalParaHashMap = new HashMap<String, MVar>();
+    protected Vector<String> formalParaTypeVector = new Vector<String>();
     protected HashMap<String, MVar> varHashMap = new HashMap<String, MVar>();
 
     public MMethod(String _name, int _col, int _row, MClass _owner, String _returnType) {
@@ -17,10 +19,12 @@ public class MMethod extends MIdentifier {
 
     public boolean insertFormalPara(MVar var) {
         String name = var.getName();
+        String type = var.getType();
         if (formalParaHashMap.containsKey(name)) {
             return false;
         }
         formalParaHashMap.put(name, var);
+        formalParaTypeVector.add(type);
         return true;
     }
 

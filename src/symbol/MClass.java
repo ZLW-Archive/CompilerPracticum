@@ -1,6 +1,7 @@
 package symbol;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 public class MClass extends MIdentifier {
 
@@ -77,8 +78,24 @@ public class MClass extends MIdentifier {
             return false;
         }
         for (String methodName: methodHashMap.keySet()) {
+            MMethod curMethod = methodHashMap.get(methodName);
             if (extendClass.getMethod(methodName) != null) {
-                return true;
+                MMethod extendClassMethod = extendClass.getMethod(methodName);
+
+                Vector<String> curTypeVector = curMethod.formalParaTypeVector;
+                Vector<String> extendTypeVector = extendClassMethod.formalParaTypeVector;
+
+                if (curTypeVector.size() != extendTypeVector.size()) {
+                    return true;
+                }
+                else {
+                    int formalParaNum = curTypeVector.size();
+                    for (int i = 0; i < formalParaNum; i ++) {
+                        if (!curTypeVector.elementAt(i).equals(extendTypeVector.elementAt(i))) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
