@@ -675,7 +675,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
 
         curMethod.startCheckFormalPara();
         firstExprReturnType = n.f0.accept(this, curMethod);
-        curMethod.checkingFormalPara(firstExprReturnType.getType());
+        curMethod.checkingFormalPara(firstExprReturnType.getType(), allClassList);
 
         n.f1.accept(this, curMethod);
 
@@ -697,7 +697,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         MType exprReturnType;
 
         exprReturnType = n.f1.accept(this, argu);
-        ((MMethod)argu).checkingFormalPara(exprReturnType.getType());
+        ((MMethod)argu).checkingFormalPara(exprReturnType.getType(), allClassList);
 
         return _ret;
     }

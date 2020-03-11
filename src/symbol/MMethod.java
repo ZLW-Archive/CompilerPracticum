@@ -69,7 +69,7 @@ public class MMethod extends MIdentifier {
         formalParaTypeCheckerIndex = 0;
     }
 
-    public void checkingFormalPara(String curParaType) {
+    public void checkingFormalPara(String curParaType, MClassList allClassList) {
         if (formalParaTypeCheckerIndex == -1) {return;}
 
         if (formalParaTypeCheckerIndex >= formalParaTypeVector.size()) {
@@ -78,7 +78,8 @@ public class MMethod extends MIdentifier {
         }
 
         String requiredType = formalParaTypeVector.elementAt(formalParaTypeCheckerIndex);
-        if (!curParaType.equals(requiredType)) {
+//        if (!curParaType.equals(requiredType)) {
+        if (! allClassList.checkExtendAssign(requiredType, curParaType)) {
             formalParaTypeCheckerIndex = -1;
         }
         else {
