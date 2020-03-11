@@ -82,6 +82,10 @@ public class MClass extends MIdentifier {
             if (extendClass.getMethod(methodName) != null) {
                 MMethod extendClassMethod = extendClass.getMethod(methodName);
 
+                if (! curMethod.getReturnType().getType().equals(extendClassMethod.getReturnType().getType())) {
+                    return true;
+                }
+
                 Vector<String> curTypeVector = curMethod.formalParaTypeVector;
                 Vector<String> extendTypeVector = extendClassMethod.formalParaTypeVector;
 

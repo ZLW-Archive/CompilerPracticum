@@ -3,14 +3,10 @@ class test56{
     }
 }
 
-class B extends A{
-    public int test (int x) {
-        int t;
-        t = a;
-        return 1;
-    }
+class A {
+    public int x() {return 1;}
 }
 
-class A{
-    int a;
+class B extends A {
+    public boolean x() {return 1<1;}
 }
