@@ -666,8 +666,25 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
      */
     public MType visit(ExpressionList n, MType argu) {
         MType _ret = null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
+        MMethod curMethod;
+        MType firstExprReturnType;
+
+        boolean formalParaCheckFlag;
+
+        curMethod = (MMethod)argu;
+
+        curMethod.startCheckFormalPara();
+        firstExprReturnType = n.f0.accept(this, curMethod);
+        curMethod.checkingFormalPara(firstExprReturnType.getType());
+
+        n.f1.accept(this, curMethod);
+
+        formalParaCheckFlag = curMethod.endCheckFormalPara();
+
+        if (! formalParaCheckFlag) {
+            ErrorPrint.print("Formal parameter not match in %s", curMethod.getName());
+        }
+
         return _ret;
     }
 
@@ -677,8 +694,11 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
      */
     public MType visit(ExpressionRest n, MType argu) {
         MType _ret = null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
+        MType exprReturnType;
+
+        exprReturnType = n.f1.accept(this, argu);
+        ((MMethod)argu).checkingFormalPara(exprReturnType.getType());
+
         return _ret;
     }
 

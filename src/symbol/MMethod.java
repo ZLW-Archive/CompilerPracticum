@@ -7,8 +7,11 @@ public class MMethod extends MIdentifier {
 
     protected MClass ownerClass;
     protected String returnType;
+
     protected HashMap<String, MVar> formalParaHashMap = new HashMap<String, MVar>();
     protected Vector<String> formalParaTypeVector = new Vector<String>();
+    protected int formalParaTypeCheckerIndex;
+
     protected HashMap<String, MVar> varHashMap = new HashMap<String, MVar>();
 
     public MMethod(String _name, int _col, int _row, MClass _owner, String _returnType) {
@@ -60,6 +63,31 @@ public class MMethod extends MIdentifier {
 
     public MClass getOwnerClass() {
         return ownerClass;
+    }
+
+    public void startCheckFormalPara() {
+        formalParaTypeCheckerIndex = 0;
+    }
+
+    public void checkingFormalPara(String curParaType) {
+        if (formalParaTypeCheckerIndex == -1) {return;}
+
+        if (formalParaTypeCheckerIndex >= formalParaTypeVector.size()) {
+            formalParaTypeCheckerIndex = -1;
+            return;
+        }
+
+        String requiredType = formalParaTypeVector.elementAt(formalParaTypeCheckerIndex);
+        if (!curParaType.equals(requiredType)) {
+            formalParaTypeCheckerIndex = -1;
+        }
+        else {
+            formalParaTypeCheckerIndex += 1;
+        }
+    }
+
+    public boolean endCheckFormalPara() {
+        return formalParaTypeCheckerIndex == formalParaTypeVector.size() && formalParaTypeCheckerIndex != -1;
     }
 
 }
