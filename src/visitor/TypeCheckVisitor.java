@@ -253,6 +253,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
                 ErrorPrint.print("Unknown variable %s at (%d, %d) in method", name, n.f0.beginLine, n.f0.beginColumn);
             }
         }
+//        TODO: if a var and a method have the same name???
         else if (argu instanceof MClass) {
             if (((MClass)argu).getVar(name) != null) {
                 curType = ((MClass)argu).getVar(name).getType();

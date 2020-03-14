@@ -6,7 +6,7 @@ import symbol.*;
 public class Main {
     public static void main(String[] args){
         try {
-            String filename = "test_files/TreeVisitor-error.java";
+            String filename = "test_files/_MyTest.java";
             InputStream in = new FileInputStream(filename);
             Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();

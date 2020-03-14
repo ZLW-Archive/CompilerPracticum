@@ -1,14 +1,27 @@
-class MoreThan4{
+class Test {
     public static void main(String[] a){
-        System.out.println(new MT4().test(new B()));
     }
-}
-
-class MT4 {
-    public int test (A a) {return 1;}
 }
 
 class A {}
 
-class B extends A {}
+class B extends A {
+    public int over() {
+        int t;
+        Start x;
+        t = x.start();
+        return 1;
+    }
+}
+
+class Start {
+    boolean start;
+    public int start () {
+        A a;
+        int c;
+        a = new B();
+        c = a.over();
+        return 0;
+    }
+}
 
