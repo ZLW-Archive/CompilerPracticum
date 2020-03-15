@@ -8,7 +8,10 @@ class MT4 {
     public int test (A a) {return 1;}
 }
 
-class A {}
+class B extends A {int test; public int dosomething(){int test; ok = 10; return test;}}
 
-class B extends A {}
+class A extends C {}
+
+class C extends B {int ok;}
+
 
