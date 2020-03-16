@@ -20,6 +20,16 @@ public class MMethod extends MIdentifier {
         returnType = _returnType;
     }
 
+    public void printSymbolList(int intend)
+    {
+        for (int i = 0;i < intend; ++i)
+        {
+            System.out.print("| ");
+        }
+        System.out.print("MMethod \n");
+        for (MVar x: formalParaHashMap.values())
+            x.printSymbolList(intend + 1);
+    }
     public boolean insertFormalPara(MVar var) {
         String name = var.getName();
         String type = var.getType();

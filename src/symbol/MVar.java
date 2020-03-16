@@ -20,6 +20,13 @@ public class MVar extends MIdentifier {
         }
     }
 
+    public void printSymbolList(int intend)
+    {
+        for (int i = 0;i < intend; ++i)
+            System.out.print("| ");
+        System.out.print("MVar "+ type + " " + name + "\n");
+    }
+
     public void init() {
         init = true;
     }

@@ -18,6 +18,24 @@ public class MClass extends MIdentifier {
         extendClass = null;
     }
 
+
+    public void printSymbolList(int intend)
+    {
+        for (int i = 0;i < intend; ++i)
+            System.out.print("| ");
+
+        System.out.print("Mclass " + name);
+        if (extendClassName != null)
+            System.out.print(" extends " + extendClassName);
+        System.out.print("\n");
+
+        for (MVar x: varHashMap.values())
+            x.printSymbolList(intend + 1);
+
+        for (MMethod x:methodHashMap.values())
+            x.printSymbolList(intend + 1);
+
+    }
     public boolean setExtendClass(MClassList allClassList) {
         if (extendClassName == null) {
             return true;

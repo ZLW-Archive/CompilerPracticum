@@ -1,6 +1,5 @@
-package test;
 
-class test56{
+class Test{
     public static void main(String[] a){
     }
 }

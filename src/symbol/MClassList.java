@@ -21,6 +21,17 @@ public class MClassList extends MType {
         return true;
     }
 
+
+    public void printSymbolList(int intend)
+    {
+        for (int i = 0;i < intend; ++i)
+            System.out.print("| ");
+        System.out.print("Class list: \n");
+
+        for (MClass x: classHashMap.values())
+            x.printSymbolList(intend + 1);
+    }
+
     public MClass getClass(String _key) {
         if (! classHashMap.containsKey(_key)) {
             return null;
