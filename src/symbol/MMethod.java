@@ -26,7 +26,7 @@ public class MMethod extends MIdentifier {
         {
             System.out.print("| ");
         }
-        System.out.print("MMethod \n");
+        System.out.print("MMethod " + name + "\n");
         for (MVar x: formalParaHashMap.values())
             x.printSymbolList(intend + 1);
     }
