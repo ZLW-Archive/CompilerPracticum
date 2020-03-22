@@ -91,7 +91,7 @@ public class MClass extends MIdentifier {
         return null;
      }
 
-     public boolean findOverride() {
+     public boolean findOverride(MClassList allClassList) {
         if (extendClass == null) {
             return false;
         }
@@ -100,7 +100,8 @@ public class MClass extends MIdentifier {
             if (extendClass.getMethod(methodName) != null) {
                 MMethod extendClassMethod = extendClass.getMethod(methodName);
 
-                if (! curMethod.getReturnType().getType().equals(extendClassMethod.getReturnType().getType())) {
+//                if (! curMethod.getReturnType().getType().equals(extendClassMethod.getReturnType().getType())) {
+                if (! (allClassList.checkExtendAssign(extendClassMethod.getReturnType().getType(), curMethod.getReturnType().getType()))) {
                     return true;
                 }
 

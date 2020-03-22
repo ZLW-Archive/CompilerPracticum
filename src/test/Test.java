@@ -5,7 +5,7 @@ class Test{
 }
 
 class A{
-    public A test () {return new A();}
+    public A test () {return new B();}
 }
 
 class B extends A{

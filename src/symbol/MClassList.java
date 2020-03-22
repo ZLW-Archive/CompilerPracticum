@@ -73,7 +73,7 @@ public class MClassList extends MType {
 
     public boolean findAllOverride() {
         for (MClass x: classHashMap.values()) {
-            if (x.findOverride()) {
+            if (x.findOverride(this)) {
                 return true;
             }
         }
