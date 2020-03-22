@@ -91,7 +91,7 @@ public class MClass extends MIdentifier {
         return null;
      }
 
-     public boolean findOverride(MClassList allClassList) {
+     public boolean findOverload(MClassList allClassList) {
         if (extendClass == null) {
             return false;
         }

@@ -71,9 +71,9 @@ public class MClassList extends MType {
         return cnt != classHashMap.size();
     }
 
-    public boolean findAllOverride() {
+    public boolean findAllOverload() {
         for (MClass x: classHashMap.values()) {
-            if (x.findOverride(this)) {
+            if (x.findOverload(this)) {
                 return true;
             }
         }
