@@ -189,7 +189,8 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         declareReturnType = curMethod.getReturnType();
         realReturnType = n.f10.accept(this, curMethod);
 
-        if (! (declareReturnType.getType()).equals(realReturnType.getType())) {
+//        if (! (declareReturnType.getType()).equals(realReturnType.getType())) {
+        if (! (allClassList.checkExtendAssign(declareReturnType.getType(), realReturnType.getType()))) {
             ErrorPrint.print("Return type not match of %s at (%d, %d)", curMethod.getName(), curMethod.getRow(), curMethod.getCol());
         }
 
