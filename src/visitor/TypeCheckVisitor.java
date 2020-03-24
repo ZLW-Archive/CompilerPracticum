@@ -23,12 +23,12 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         MType _ret = null;
         boolean setAllExtendClassFlag;
         boolean existExtendLoopFlag;
-        boolean existOverrideFlag;
+        boolean existOverloadFlag;
 
         allClassList = (MClassList)argu;
         setAllExtendClassFlag = allClassList.setAllExtendClass();
         existExtendLoopFlag = allClassList.findExtendClassLoop();
-        existOverrideFlag = allClassList.findAllOverload();
+        existOverloadFlag = allClassList.findAllOverload();
 
 //        if (! setAllExtendClassFlag) {
 //            ErrorPrint.print("extend class error");
@@ -36,7 +36,7 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         if (existExtendLoopFlag) {
             ErrorPrint.print("Exist extend loop");
         }
-        if (existOverrideFlag) {
+        if (existOverloadFlag) {
             ErrorPrint.print("Exist overload");
         }
 
