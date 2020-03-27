@@ -1,7 +1,10 @@
 import java.io.*;
+import java.util.HashMap;
+
 import visitor.*;
 import syntaxtree.*;
 import symbol.*;
+
 
 public class Main {
     public static void main(String[] args){
@@ -15,6 +18,9 @@ public class Main {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
+            PrintStream ps=new PrintStream(new FileOutputStream("./test1.txt"));
+            System.setOut(ps);
+            root.accept(new ToPigletVisiter((MClassList) allClassList), null);
             System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();

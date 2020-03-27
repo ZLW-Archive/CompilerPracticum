@@ -270,7 +270,8 @@ public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
         formalParaIdentifier = (MIdentifier) n.f1.accept(this, argu);
         curFormalPara = new MVar(curFormalParaType, formalParaIdentifier.getName(), formalParaIdentifier.getCol(), formalParaIdentifier.getRow(), argu, true);
 
-        insertFormalParaFlag = ((MMethod) argu).insertFormalPara(curFormalPara) && ((MMethod) argu).insertVar(curFormalPara);
+        //changed!
+        insertFormalParaFlag = ((MMethod) argu).insertFormalPara(curFormalPara);// && ((MMethod) argu).insertVar(curFormalPara);
         if (!insertFormalParaFlag) {
             ErrorPrint.print("Duplicate formal parameter of %s at (%d, %d)", curFormalPara.getName(), curFormalPara.getRow(), curFormalPara.getCol());
         }

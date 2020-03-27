@@ -2,6 +2,7 @@ package symbol;
 
 import java.util.HashMap;
 import java.util.Vector;
+import minijava.*;
 
 public class MClass extends MIdentifier {
 
@@ -11,6 +12,7 @@ public class MClass extends MIdentifier {
     protected String extendClassName; // this is parent class's name
     protected MClass extendClass;
 
+
     public MClass(String _name, int _col, int _row, String _extendClassName) {
         super(_name, _name,  _col, _row);
 
@@ -18,6 +20,45 @@ public class MClass extends MIdentifier {
         extendClass = null;
     }
 
+    public HashMap<String, Pair<String, Integer>> getMethodTable()
+    {
+        HashMap<String, Pair<String, Integer>> ret;
+        if (extendClass == null)
+            ret = new HashMap<>();
+        else
+            ret = extendClass.getMethodTable();
+        int cnt = ret.size()*4;
+        for (String x: methodHashMap.keySet())
+        {
+            if (ret.containsKey(x))
+            {
+                Pair<String, Integer> t = ret.get(x);
+                ret.replace(x, t, new Pair<>(getName()+"_"+x, t.getSecond()));
+            }
+            else
+            {
+                ret.put(x, new Pair<>(getName()+"_"+x, cnt));
+                cnt += 4;
+            }
+        }
+        return  ret;
+    }
+
+    public HashMap<String, Integer> getVarTable()
+    {
+        HashMap<String, Integer> ret;
+        if (extendClass == null)
+            ret = new HashMap<>();
+        else
+            ret = extendClass.getVarTable();
+        int cnt = ret.size()*4 + 4;
+        for (String x: varHashMap.keySet())
+        {
+            ret.put(name+"."+x, cnt);
+            cnt += 4;
+        }
+        return ret;
+    }
 
     public void printSymbolList(int intend)
     {

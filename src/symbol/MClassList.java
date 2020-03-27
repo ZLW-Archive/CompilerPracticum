@@ -1,9 +1,6 @@
 package symbol;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class MClassList extends MType {
     protected  HashMap<String, MClass> classHashMap = new HashMap<String, MClass>();
@@ -19,6 +16,14 @@ public class MClassList extends MType {
         }
         classHashMap.put(_key, _value);
         return true;
+    }
+
+    public Vector<String> getAllClassNames()
+    {
+        Vector<String> ret = new Vector<>();
+        for (String x:classHashMap.keySet())
+            ret.add(x);
+        return ret;
     }
 
 

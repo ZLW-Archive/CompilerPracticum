@@ -2,6 +2,7 @@ package symbol;
 
 import java.util.HashMap;
 import java.util.Vector;
+import minijava.*;
 
 public class MMethod extends MIdentifier {
 
@@ -10,6 +11,7 @@ public class MMethod extends MIdentifier {
 
     protected HashMap<String, MVar> formalParaHashMap = new HashMap<String, MVar>();
     protected Vector<String> formalParaTypeVector = new Vector<String>();
+    protected Vector<String> formalParaNameVector = new Vector<>();
     protected int formalParaTypeCheckerIndex;
 
     protected HashMap<String, MVar> varHashMap = new HashMap<String, MVar>();
@@ -20,6 +22,23 @@ public class MMethod extends MIdentifier {
         returnType = _returnType;
     }
 
+    public Pair<Integer, HashMap<String, Integer>> getVarList(Integer temp)
+    {
+        HashMap<String, Integer> base = ownerClass.getVarTable();
+        int cnt = 0;
+
+        for (int i=0;i<formalParaNameVector.size();++i)
+            base.put(formalParaNameVector.get(i), cnt++);
+
+        for (String x:varHashMap.keySet())
+            base.put(x, temp++);
+        return new Pair<>(formalParaNameVector.size(), base);
+    }
+
+    public int paramscnt()
+    {
+        return formalParaHashMap.size()+varHashMap.size();
+    }
     public void printSymbolList(int intend)
     {
         for (int i = 0;i < intend; ++i)
@@ -28,6 +47,8 @@ public class MMethod extends MIdentifier {
         }
         System.out.print("MMethod " + name + "\n");
         for (MVar x: formalParaHashMap.values())
+            x.printSymbolList(intend + 1);
+        for (MVar x: varHashMap.values())
             x.printSymbolList(intend + 1);
     }
     public boolean insertFormalPara(MVar var) {
@@ -38,6 +59,7 @@ public class MMethod extends MIdentifier {
         }
         formalParaHashMap.put(name, var);
         formalParaTypeVector.add(type);
+        formalParaNameVector.add(name);
         return true;
     }
 
@@ -51,6 +73,9 @@ public class MMethod extends MIdentifier {
     }
 
     public MVar getVar(String key) {
+        MVar var = getFormalPara(key);
+        if (var != null)
+            return var;
         if (varHashMap.containsKey(key)) {
             return varHashMap.get(key);
         }

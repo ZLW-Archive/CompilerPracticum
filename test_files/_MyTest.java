@@ -5,10 +5,22 @@ class Test{
 }
 
 class A{
-    public A test () {return new A();}
+    int b;
+    public A test () {int hello; hello = hello + 1; return new A();}
+    public int getb(int mama, int baba) {return b;}
 }
 
 class B extends A{
-    public B test () {return new B();}
+    int c;
+    public A tt()
+    {
+        B bb;
+        A aa;
+        int [] cc;
+        cc = new int[aa.getb(1,2)];
+        aa = new B();
+        aa = aa.test();
+        return bb;
+    }
 }
 
