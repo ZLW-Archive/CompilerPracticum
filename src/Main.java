@@ -9,7 +9,7 @@ import symbol.*;
 public class Main {
     public static void main(String[] args){
         try {
-            String filename = "./test_files/_MyTest.java";
+            String filename = "./test_files/TreeVisitor.java";
             InputStream in = new FileInputStream(filename);
             if (in == null)
                 System.out.print("it is null");
@@ -21,7 +21,7 @@ public class Main {
             PrintStream ps=new PrintStream(new FileOutputStream("./test1.txt"));
             System.setOut(ps);
             root.accept(new ToPigletVisiter((MClassList) allClassList), null);
-            System.out.println("All Finish!");
+            //System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (TokenMgrError e) {

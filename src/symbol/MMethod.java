@@ -25,19 +25,32 @@ public class MMethod extends MIdentifier {
     public Pair<Integer, HashMap<String, Integer>> getVarList(Integer temp)
     {
         HashMap<String, Integer> base = ownerClass.getVarTable();
-        int cnt = 0;
+        int cnt = 2;
 
         for (int i=0;i<formalParaNameVector.size();++i)
-            base.put(formalParaNameVector.get(i), cnt++);
+        {
+            if (cnt > 0)
+            {
+                base.put(formalParaNameVector.get(i), cnt++);
+                if (cnt == 17) // 17 is the EXTENDED PARAM LIST
+                    cnt = 0;
+            }
+            else
+                base.put(formalParaNameVector.get(i), cnt--);
+        }
 
         for (String x:varHashMap.keySet())
             base.put(x, temp++);
         return new Pair<>(formalParaNameVector.size(), base);
     }
 
-    public int paramscnt()
+    public int varcnt()
     {
         return formalParaHashMap.size()+varHashMap.size();
+    }
+    public int paramcnt()
+    {
+        return formalParaHashMap.size();
     }
     public void printSymbolList(int intend)
     {

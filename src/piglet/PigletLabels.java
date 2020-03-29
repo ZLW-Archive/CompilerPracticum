@@ -15,10 +15,14 @@ public class PigletLabels
     {
         varList = _p.varList;
         mc = _p.mc;
+        mm = _p.mm;
         intend = _p.intend;
     }
     public PigletLabels(){}
     public HashMap<String, Integer> varList;
+    public int paramlength;
+    public int paramextend;
+    public int paramtot;
     public MClass mc;
     public MMethod mm;
     public int intend;
