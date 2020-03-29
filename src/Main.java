@@ -9,7 +9,8 @@ import symbol.*;
 public class Main {
     public static void main(String[] args){
         try {
-            String filename = "./test_files/TreeVisitor.java";
+            //String filename = "./test_files/TreeVisitor.java";
+            String filename = "./test_files/_MyTest.java";
             InputStream in = new FileInputStream(filename);
             if (in == null)
                 System.out.print("it is null");

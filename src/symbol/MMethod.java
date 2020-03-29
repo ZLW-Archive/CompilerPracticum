@@ -46,7 +46,7 @@ public class MMethod extends MIdentifier {
 
     public int varcnt()
     {
-        return formalParaHashMap.size()+varHashMap.size();
+        return varHashMap.size();
     }
     public int paramcnt()
     {
