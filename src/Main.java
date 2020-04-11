@@ -19,7 +19,7 @@ public class Main {
             root.accept(new TypeCheckVisitor(), allClassList);
             PrintStream ps = new PrintStream(new FileOutputStream(".//stest.spg"));
             System.setOut(ps);
-            root.accept(new ToSPigletVisiter((MClassList) allClassList), null);
+            root.accept(new ToSPigletVisitor((MClassList) allClassList), null);
             System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
