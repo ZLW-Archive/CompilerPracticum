@@ -19,9 +19,9 @@ public class Main {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
-            PrintStream ps=new PrintStream(new FileOutputStream("./test1.txt"));
+            PrintStream ps=new PrintStream(new FileOutputStream("./stest.txt"));
             System.setOut(ps);
-            root.accept(new ToPigletVisiter((MClassList) allClassList), null);
+            root.accept(new ToSPigletVisiter((MClassList) allClassList), null);
             //System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
