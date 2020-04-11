@@ -10,7 +10,7 @@ import piglet.*;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class ToPigletVisiter extends GJDepthFirst<PigletRet,PigletLabels>
+public class ToPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 {
     //The symbol List
     MClassList symbolTable;
@@ -35,7 +35,7 @@ public class ToPigletVisiter extends GJDepthFirst<PigletRet,PigletLabels>
     static final int GLOBAL_CLASS_LIST = 1;
     static final int THIS_POINTER = 0;
 
-    public ToPigletVisiter (MClassList _sl)
+    public ToPigletVisitor(MClassList _sl)
     {
         symbolTable = _sl;
         temp = 21;
