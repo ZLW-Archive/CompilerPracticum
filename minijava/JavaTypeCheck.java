@@ -3,7 +3,7 @@ import visitor.*;
 import syntaxtree.*;
 import symbol.*;
 
-public class Main {
+public class JavaTypeCheck {
     int i;
     int args;
     public static void main(String[] args){
@@ -17,12 +17,6 @@ public class Main {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
-//            PrintStream ps = new PrintStream(new FileOutputStream(".//test.spg"));
-//            System.setOut(ps);
-            root.accept(new ToPigletVisitor((MClassList) allClassList), null);
-//            PrintStream sps = new PrintStream(new FileOutputStream(".//stest.spg"));
-//            System.setOut(sps);
-            root.accept(new ToSPigletVisitor((MClassList) allClassList), null);
             System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
