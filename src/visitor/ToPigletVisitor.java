@@ -50,7 +50,7 @@ public class ToPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         Vector<String> v = symbolTable.getAllClassNames();
         int length = v.size();
 
-        //Here we allocate the space for the global class list and then buid each class
+        //Here we allocate the space for the global class list and then build each class
         System.out.printf("    MOVE TEMP %d HALLOCATE %d\n", GLOBAL_CLASS_LIST, length*4);
         for (int i = 0; i < v.size(); ++i)
         {
