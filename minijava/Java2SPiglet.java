@@ -8,8 +8,9 @@ public class Java2SPiglet {
     int args;
     public static void main(String[] args){
         try {
-            String filename = "./test_files/_MyTest.java";
-            InputStream in = new FileInputStream(filename);
+            String fileName = "_MyTest";
+            String filePath = "./test_files/" + fileName + ".java";
+            InputStream in = new FileInputStream(filePath);
             if (in == null)
                 System.out.print("it is null");
             Node root = new MiniJavaParser(in).Goal();
@@ -17,13 +18,11 @@ public class Java2SPiglet {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
-//            PrintStream ps = new PrintStream(new FileOutputStream(".//test.spg"));
-//            System.setOut(ps);
-//            root.accept(new ToPigletVisitor((MClassList) allClassList), null);
-            PrintStream sps = new PrintStream(new FileOutputStream(".//stest.spg"));
-            System.setOut(sps);
+            String outPath = "./outputs/" + fileName + ".sp";
+            PrintStream ps = new PrintStream(new FileOutputStream(outPath));
+            System.setOut(ps);
             root.accept(new ToSPigletVisitor((MClassList) allClassList), null);
-            System.out.println("All Finish!");
+//            System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (TokenMgrError e) {
