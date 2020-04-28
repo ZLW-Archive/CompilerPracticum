@@ -6,7 +6,7 @@ public class SPiglet2Kanga {
     public static void main(String[] args){
         try {
             String fileName = "_MyTest";
-            String filePath = "./outputs/" + fileName + ".sp";
+            String filePath = "./outputs/" + fileName + ".spg";
             InputStream in = new FileInputStream(filePath);
             Node root = new SpigletParser(in).Goal();
             System.out.println("All Finish!");

@@ -18,7 +18,7 @@ public class Java2SPiglet {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
-            String outPath = "./outputs/" + fileName + ".sp";
+            String outPath = "./outputs/" + fileName + ".spg";
             PrintStream ps = new PrintStream(new FileOutputStream(outPath));
             System.setOut(ps);
             root.accept(new ToSPigletVisitor((MClassList) allClassList), null);
