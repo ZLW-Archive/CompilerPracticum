@@ -58,7 +58,8 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
         n.f1.accept(this);
         n.f2.accept(this);
 
-
+        curFlowGraph.addExitNode();
+        curFlowGraph.finishGraph();
 
         n.f3.accept(this);
         n.f4.accept(this);

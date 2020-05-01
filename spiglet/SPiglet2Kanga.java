@@ -7,7 +7,7 @@ import java.io.InputStream;
 public class SPiglet2Kanga {
     public static void main(String[] args) {
         try {
-            String fileName = "_MyTest";
+            String fileName = "BubbleSort";
             String filePath = "./outputs/" + fileName + ".spg";
             InputStream in = new FileInputStream(filePath);
             Node root = new SpigletParser(in).Goal();

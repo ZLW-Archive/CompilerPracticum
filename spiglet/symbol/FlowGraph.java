@@ -1,6 +1,7 @@
 package symbol;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 public class FlowGraph {
@@ -18,10 +19,62 @@ public class FlowGraph {
         nodeId2flowNode.put(0, entryNode);
     }
 
-    public void addEndNode() {
+    public void addExitNode() {
         flowNodeId++;
         FlowNode exitNode = new FlowNode(flowNodeId, this);
         nodeId2flowNode.put(flowNodeId, exitNode);
+    }
+
+    public void finishGraph() {
+        for (Integer _from: pendingEdges.keySet()) {
+            String _toLabel = pendingEdges.get(_from);
+            Integer _to = label2nodeId.get(_toLabel);
+            addEdge(_from, _to);
+        }
+
+        int cnt = 0;
+        while (true) {
+            boolean change = updateInOutSet();
+            if (! change) { break; }
+            System.out.println(cnt++);
+        }
+    }
+
+    public HashSet<Integer> AND(HashSet<Integer> x, HashSet<Integer> y) {
+        HashSet<Integer> ret = new HashSet<>(x);
+        ret.retainAll(y);
+        return ret;
+    }
+
+    public HashSet<Integer> OR(HashSet<Integer> x, HashSet<Integer> y) {
+        HashSet<Integer> ret = new HashSet<>(x);
+        ret.addAll(y);
+        return ret;
+    }
+
+    public HashSet<Integer> MINUS(HashSet<Integer> x, HashSet<Integer> y) {
+        HashSet<Integer> ret = new HashSet<>(x);
+        ret.removeAll(y);
+        return ret;
+    }
+
+    public boolean updateInOutSet() {
+        boolean change = false;
+        for (FlowNode node: nodeId2flowNode.values()) {
+            HashSet<Integer> _in = OR(node.useTempHashSet, MINUS(node.outTempHashSet, node.defTempHashSet));
+            HashSet<Integer> _out = new HashSet<>();
+            for (FlowNode nextNode: node.nextNodeHashSet) {
+                _out = OR(_out, nextNode.inTempHashSet);
+            }
+
+            if ((!node.inTempHashSet.equals(_in)) || (!node.outTempHashSet.equals(_out))) {
+                change = true;
+            }
+
+            node.inTempHashSet = _in;
+            node.outTempHashSet = _out;
+        }
+        return change;
     }
 
     public void addPendingEdge(Integer _nodeId, String _lineLabel) {
