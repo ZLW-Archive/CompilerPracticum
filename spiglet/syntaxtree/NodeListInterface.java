@@ -9,14 +9,20 @@ package syntaxtree;
  * implement.
  */
 public interface NodeListInterface extends Node {
-   public void addNode(Node n);
-   public Node elementAt(int i);
-   public java.util.Enumeration<Node> elements();
-   public int size();
+    public void addNode(Node n);
 
-   public void accept(visitor.Visitor v);
-   public <R,A> R accept(visitor.GJVisitor<R,A> v, A argu);
-   public <R> R accept(visitor.GJNoArguVisitor<R> v);
-   public <A> void accept(visitor.GJVoidVisitor<A> v, A argu);
+    public Node elementAt(int i);
+
+    public java.util.Enumeration<Node> elements();
+
+    public int size();
+
+    public void accept(visitor.Visitor v);
+
+    public <R, A> R accept(visitor.GJVisitor<R, A> v, A argu);
+
+    public <R> R accept(visitor.GJNoArguVisitor<R> v);
+
+    public <A> void accept(visitor.GJVoidVisitor<A> v, A argu);
 }
 

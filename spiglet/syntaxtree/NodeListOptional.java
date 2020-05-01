@@ -4,42 +4,58 @@
 
 package syntaxtree;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * Represents an optional grammar list, e.g. ( A )*
  */
 public class NodeListOptional implements NodeListInterface {
-   public NodeListOptional() {
-      nodes = new Vector<Node>();
-   }
+    public Vector<Node> nodes;
 
-   public NodeListOptional(Node firstNode) {
-      nodes = new Vector<Node>();
-      addNode(firstNode);
-   }
+    public NodeListOptional() {
+        nodes = new Vector<Node>();
+    }
 
-   public void addNode(Node n) {
-      nodes.addElement(n);
-   }
+    public NodeListOptional(Node firstNode) {
+        nodes = new Vector<Node>();
+        addNode(firstNode);
+    }
 
-   public Enumeration<Node> elements() { return nodes.elements(); }
-   public Node elementAt(int i)  { return nodes.elementAt(i); }
-   public int size()             { return nodes.size(); }
-   public boolean present()      { return nodes.size() != 0; }
-   public void accept(visitor.Visitor v) {
-      v.visit(this);
-   }
-   public <R,A> R accept(visitor.GJVisitor<R,A> v, A argu) {
-      return v.visit(this,argu);
-   }
-   public <R> R accept(visitor.GJNoArguVisitor<R> v) {
-      return v.visit(this);
-   }
-   public <A> void accept(visitor.GJVoidVisitor<A> v, A argu) {
-      v.visit(this,argu);
-   }
+    public void addNode(Node n) {
+        nodes.addElement(n);
+    }
 
-   public Vector<Node> nodes;
+    public Enumeration<Node> elements() {
+        return nodes.elements();
+    }
+
+    public Node elementAt(int i) {
+        return nodes.elementAt(i);
+    }
+
+    public int size() {
+        return nodes.size();
+    }
+
+    public boolean present() {
+        return nodes.size() != 0;
+    }
+
+    public void accept(visitor.Visitor v) {
+        v.visit(this);
+    }
+
+    public <R, A> R accept(visitor.GJVisitor<R, A> v, A argu) {
+        return v.visit(this, argu);
+    }
+
+    public <R> R accept(visitor.GJNoArguVisitor<R> v) {
+        return v.visit(this);
+    }
+
+    public <A> void accept(visitor.GJVoidVisitor<A> v, A argu) {
+        v.visit(this, argu);
+    }
 }
 
