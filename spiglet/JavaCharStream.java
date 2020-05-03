@@ -31,6 +31,7 @@ public class JavaCharStream {
     static int bufsize;
     static int available;
     static int tokenBegin;
+
     /**
      * Constructor.
      */

@@ -119,8 +119,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
         if (expTempIds.size() == 1) {
             int retTempId = expTempIds.get(0);
             curFlowGraph.addExitNode(retTempId);
-        }
-        else {
+        } else {
             curFlowGraph.addExitNode();
         }
 
@@ -263,7 +262,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
         Integer curNodeId = curFlowGraph.newFlowNode(curLineLabel, seqEdgeFlag);
         FlowNode curFlowNode = curFlowGraph.getFlowNode(curNodeId);
         curFlowNode.addDefTemp(tempId);
-        for (Integer i: expTempIds) {
+        for (Integer i : expTempIds) {
             curFlowNode.addUseTemp(i);
         }
         seqEdgeFlag = true;
@@ -281,7 +280,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
         Vector<Integer> expTempIds = (Vector<Integer>) n.f1.accept(this);
         Integer curNodeId = curFlowGraph.newFlowNode(curLineLabel, seqEdgeFlag);
         FlowNode curFlowNode = curFlowGraph.getFlowNode(curNodeId);
-        for (Integer i: expTempIds) {
+        for (Integer i : expTempIds) {
             curFlowNode.addUseTemp(i);
         }
         seqEdgeFlag = true;
@@ -314,7 +313,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
         Vector<Object> tempList = (Vector<Object>) n.f3.accept(this);
         n.f4.accept(this);
 
-        for (Object i: tempList) {
+        for (Object i : tempList) {
             curUseTempIds.add((Integer) i);
         }
 
@@ -372,7 +371,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
     public Object visit(SimpleExp n) {
         Vector<Integer> _ret = new Vector<>();
         if (n.f0.which == 0) {
-            _ret.add((Integer)n.f0.accept(this));
+            _ret.add((Integer) n.f0.accept(this));
         }
         return _ret;
     }

@@ -2,7 +2,6 @@ package symbol;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Vector;
 
 public class FlowGraph {
     public String graphName;
@@ -24,7 +23,7 @@ public class FlowGraph {
         flowNodeId = 0;
 
         FlowNode entryNode = new FlowNode(0, this);
-        for (int i = 0; i < _paraNum; i ++) {
+        for (int i = 0; i < _paraNum; i++) {
             entryNode.addDefTemp(i);
         }
         nodeId2flowNode.put(0, entryNode);
@@ -44,7 +43,7 @@ public class FlowGraph {
     }
 
     public void finishGraph() {
-        for (Integer _from: pendingEdges.keySet()) {
+        for (Integer _from : pendingEdges.keySet()) {
             String _toLabel = pendingEdges.get(_from);
             Integer _to = label2nodeId.get(_toLabel);
             addEdge(_from, _to);
@@ -53,7 +52,9 @@ public class FlowGraph {
         int cnt = 0;
         while (true) {
             boolean change = updateInOutSet();
-            if (! change) { break; }
+            if (!change) {
+                break;
+            }
             System.out.println(cnt++);
         }
     }
@@ -78,10 +79,10 @@ public class FlowGraph {
 
     public boolean updateInOutSet() {
         boolean change = false;
-        for (FlowNode node: nodeId2flowNode.values()) {
+        for (FlowNode node : nodeId2flowNode.values()) {
             HashSet<Integer> _in = OR(node.useTempHashSet, MINUS(node.outTempHashSet, node.defTempHashSet));
             HashSet<Integer> _out = new HashSet<>();
-            for (FlowNode nextNode: node.nextNodeHashSet) {
+            for (FlowNode nextNode : node.nextNodeHashSet) {
                 _out = OR(_out, nextNode.inTempHashSet);
             }
 
