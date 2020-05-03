@@ -55,8 +55,17 @@ public class FlowGraph {
             if (!change) {
                 break;
             }
-            System.out.println(cnt++);
+//            System.out.println(cnt++);
         }
+
+        IntervalAnalysis linearChecker = new IntervalAnalysis();
+        linearChecker.setTempStartEnd(this);
+        linearChecker.setRegSelect(this);
+
+        printNodeRegSelect();
+
+        System.out.println("xxx");
+
     }
 
     public HashSet<Integer> AND(HashSet<Integer> x, HashSet<Integer> y) {
@@ -132,5 +141,23 @@ public class FlowGraph {
         Integer pre = _cur - 1;
         addEdge(pre, _cur);
     }
+
+    public void printNodeRegSelect() {
+        for (Integer nodeId : nodeId2flowNode.keySet()) {
+            FlowNode node = getFlowNode(nodeId);
+
+            System.out.println("Node " + nodeId.toString() + ":");
+
+            for (Integer temp : node.regSelect.curTempId2Reg.keySet()) {
+                System.out.println("\t" + temp + " -> " + node.regSelect.curTempId2Reg.get(temp));
+            }
+            for (Integer temp : node.regSelect.curTempId2Stack.keySet()) {
+                System.out.println("\t" + temp + " -> " + node.regSelect.curTempId2Stack.get(temp));
+            }
+
+            System.out.println("===");
+        }
+    }
+
 
 }

@@ -15,9 +15,15 @@ public class FlowNode {
     public HashSet<FlowNode> preNodeHashSet = new HashSet<>();
     public HashSet<FlowNode> nextNodeHashSet = new HashSet<>();
 
+    public RegSelect regSelect;
+
     public FlowNode(int _nodeId, FlowGraph _owner) {
         nodeId = _nodeId;
         ownerFlowGraph = _owner;
+    }
+
+    public void copyRegState (IntervalAnalysis intervalAnalysis) {
+        regSelect = new RegSelect(intervalAnalysis);
     }
 
     public void addPreNode(FlowNode _node) {
