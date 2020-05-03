@@ -22,7 +22,7 @@ public class FlowNode {
         ownerFlowGraph = _owner;
     }
 
-    public void copyRegState (IntervalAnalysis intervalAnalysis) {
+    public void copyRegState(IntervalAnalysis intervalAnalysis) {
         regSelect = new RegSelect(intervalAnalysis);
     }
 

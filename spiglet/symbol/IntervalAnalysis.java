@@ -1,13 +1,12 @@
 package symbol;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Vector;
 
 public class IntervalAnalysis {
     public static String[] allRegNames = {"s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
-                                          // "t0", "t1", "t2",
-                                          "t3", "t4", "t5", "t6", "t7", "t8", "t9"};
+            // "t0", "t1", "t2",
+            "t3", "t4", "t5", "t6", "t7", "t8", "t9"};
 
     public Integer curNodePointer;
     public HashMap<String, Integer> curReg2tempId = new HashMap<>();
@@ -36,13 +35,13 @@ public class IntervalAnalysis {
         for (Integer nodeId : _graph.nodeId2flowNode.keySet()) {
             FlowNode node = _graph.getFlowNode(nodeId);
             for (Integer i : node.inTempHashSet) {
-                if (! tempStartNode.containsKey(i)) {
+                if (!tempStartNode.containsKey(i)) {
                     tempStartNode.put(i, nodeId);
                 }
                 tempEndNode.put(i, nodeId);
             }
             for (Integer i : node.outTempHashSet) {
-                if (! tempStartNode.containsKey(i)) {
+                if (!tempStartNode.containsKey(i)) {
                     tempStartNode.put(i, nodeId);
                 }
                 tempEndNode.put(i, nodeId);
@@ -51,14 +50,14 @@ public class IntervalAnalysis {
 
         for (Integer temp : tempStartNode.keySet()) {
             Integer nodeId = tempStartNode.get(temp);
-            if (! nodeIdStartTemps.containsKey(nodeId)) {
+            if (!nodeIdStartTemps.containsKey(nodeId)) {
                 nodeIdStartTemps.put(nodeId, new Vector<>());
             }
             nodeIdStartTemps.get(nodeId).add(temp);
         }
         for (Integer temp : tempEndNode.keySet()) {
             Integer nodeId = tempEndNode.get(temp);
-            if (! nodeIdEndTemps.containsKey(nodeId)) {
+            if (!nodeIdEndTemps.containsKey(nodeId)) {
                 nodeIdEndTemps.put(nodeId, new Vector<>());
             }
             nodeIdEndTemps.get(nodeId).add(temp);
@@ -148,13 +147,12 @@ public class IntervalAnalysis {
                     if (curTempId2Reg.containsKey(i)) {
                         curReg2tempId.put(curTempId2Reg.get(i), -1);
                         curTempId2Reg.remove(i);
-                    }
-                    else if (curTempId2Stack.containsKey(i)) {
+                    } else if (curTempId2Stack.containsKey(i)) {
                         String stackPos = curTempId2Stack.get(i);
                         curTempId2Stack.remove(i);
                         int stackPosIndex = Integer.parseInt(stackPos.substring(1));
                         if (stackPosIndex == curStackPos) {
-                            curStackPos --;
+                            curStackPos--;
                         } else {
                             stackMiddleAvailable.add(stackPosIndex);
                         }
