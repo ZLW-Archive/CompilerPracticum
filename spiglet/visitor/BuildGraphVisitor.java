@@ -20,6 +20,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
 
     public HashMap<String, FlowGraph> label2flowGraph = new HashMap<>();
     public FlowGraph curFlowGraph;
+    public boolean lineLabelFlag;
     public String curLineLabel;
     public boolean seqEdgeFlag = true;
 
@@ -71,7 +72,9 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
      */
     public Object visit(StmtList n) {
         Object _ret = null;
+        lineLabelFlag = true;
         n.f0.accept(this);
+        lineLabelFlag = false;
         return _ret;
     }
 
@@ -84,11 +87,45 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
      */
     public Object visit(Procedure n) {
         Object _ret = null;
+
+        String procLabel = (String) n.f0.accept(this);
+        n.f1.accept(this);
+        Integer paraNum = (Integer) n.f2.accept(this);
+        n.f3.accept(this);
+
+        curFlowGraph = new FlowGraph(procLabel, paraNum);
+        label2flowGraph.put(procLabel, curFlowGraph);
+
+        n.f4.accept(this);
+
+        return _ret;
+    }
+
+    /**
+     * f0 -> "BEGIN"
+     * f1 -> StmtList()
+     * f2 -> "RETURN"
+     * f3 -> SimpleExp()
+     * f4 -> "END"
+     */
+    public Object visit(StmtExp n) {
+        Object _ret = null;
         n.f0.accept(this);
         n.f1.accept(this);
         n.f2.accept(this);
-        n.f3.accept(this);
+        Vector<Integer> expTempIds = (Vector<Integer>) n.f3.accept(this);
         n.f4.accept(this);
+
+        if (expTempIds.size() == 1) {
+            int retTempId = expTempIds.get(0);
+            curFlowGraph.addExitNode(retTempId);
+        }
+        else {
+            curFlowGraph.addExitNode();
+        }
+
+        curFlowGraph.finishGraph();
+
         return _ret;
     }
 
@@ -104,7 +141,6 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
      */
     public Object visit(Stmt n) {
         Object _ret = null;
-        // whether a sequential edge exists
         n.f0.accept(this);
         curLineLabel = null;
         return _ret;
@@ -264,23 +300,6 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
     }
 
     /**
-     * f0 -> "BEGIN"
-     * f1 -> StmtList()
-     * f2 -> "RETURN"
-     * f3 -> SimpleExp()
-     * f4 -> "END"
-     */
-    public Object visit(StmtExp n) {
-        Object _ret = null;
-        n.f0.accept(this);
-        n.f1.accept(this);
-        n.f2.accept(this);
-        n.f3.accept(this);
-        n.f4.accept(this);
-        return _ret;
-    }
-
-    /**
      * f0 -> "CALL"
      * f1 -> SimpleExp()
      * f2 -> "("
@@ -384,7 +403,9 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
      */
     public Object visit(Label n) {
         n.f0.accept(this);
-        curLineLabel = n.f0.tokenImage;
+        if (lineLabelFlag) {
+            curLineLabel = n.f0.tokenImage;
+        }
         return n.f0.tokenImage;
     }
 

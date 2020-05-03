@@ -19,9 +19,27 @@ public class FlowGraph {
         nodeId2flowNode.put(0, entryNode);
     }
 
+    public FlowGraph(String _name, Integer _paraNum) {
+        graphName = _name;
+        flowNodeId = 0;
+
+        FlowNode entryNode = new FlowNode(0, this);
+        for (int i = 0; i < _paraNum; i ++) {
+            entryNode.addDefTemp(i);
+        }
+        nodeId2flowNode.put(0, entryNode);
+    }
+
     public void addExitNode() {
         flowNodeId++;
         FlowNode exitNode = new FlowNode(flowNodeId, this);
+        nodeId2flowNode.put(flowNodeId, exitNode);
+    }
+
+    public void addExitNode(int _retTemp) {
+        flowNodeId++;
+        FlowNode exitNode = new FlowNode(flowNodeId, this);
+        exitNode.addUseTemp(_retTemp);
         nodeId2flowNode.put(flowNodeId, exitNode);
     }
 
