@@ -66,17 +66,18 @@ public class IntervalAnalysis {
         }
     }
 
-    public void assignStack(int temp) {
+    public String assignStack(int temp) {
+        String stackPos;
         if (stackMiddleAvailable.size() != 0) {
             Integer stackPosIndex = stackMiddleAvailable.elementAt(0);
             stackMiddleAvailable.removeElementAt(0);
-            String stackPos = "X" + stackPosIndex.toString();
-            curTempId2Stack.put(temp, stackPos);
+            stackPos = "X" + stackPosIndex.toString();
         } else {
             curStackPos++;
-            String stackPos = "X" + curStackPos.toString();
-            curTempId2Stack.put(temp, stackPos);
+            stackPos = "X" + curStackPos.toString();
         }
+        curTempId2Stack.put(temp, stackPos);
+        return stackPos;
     }
 
     public void assignReg(int temp, String reg) {
@@ -85,7 +86,7 @@ public class IntervalAnalysis {
     }
 
 
-    public String getNewReg(int curTemp) {
+    public String getNewReg(int curTemp, FlowNode _node) {
         String reg = null;
         for (String s : allRegNames) {
             Integer curAssignTemp = curReg2tempId.get(s);
@@ -107,10 +108,10 @@ public class IntervalAnalysis {
 //                        curReg2tempId.put(s, -1);
 //                    }
 //                }
-            assignStack(lastEndTemp);
+            String stackPos = assignStack(lastEndTemp);
+            _node.regSelect.regStackMove.put(reg, stackPos);
             return reg;
         }
-
     }
 
     public int getLastEndTemp(int curTemp) {
@@ -132,7 +133,7 @@ public class IntervalAnalysis {
             // maybe there no start temp in this node, so check first
             if (nodeIdStartTemps.containsKey(nodeId)) {
                 for (Integer i : nodeIdStartTemps.get(nodeId)) {
-                    String newReg = getNewReg(i);
+                    String newReg = getNewReg(i, node);
                     if (newReg != null) {
                         assignReg(i, newReg);
                     } else {

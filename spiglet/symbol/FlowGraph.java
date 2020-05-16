@@ -30,6 +30,15 @@ public class FlowGraph {
         nodeId2flowNode.put(0, entryNode);
     }
 
+    public FlowNode getEntryNode() {
+        return nodeId2flowNode.get(0);
+    }
+
+    public FlowNode getNextNode(FlowNode _node) {
+        int curNodeId = _node.nodeId;
+        return getFlowNode(curNodeId + 1);
+    }
+
     public void addExitNode() {
         flowNodeId++;
         FlowNode exitNode = new FlowNode(flowNodeId, this);
@@ -63,9 +72,8 @@ public class FlowGraph {
         linearChecker.setTempStartEnd(this);
         linearChecker.setRegSelect(this);
 
-        printNodeRegSelect();
-
-        System.out.println("xxx");
+//        printNodeRegSelect();
+//        System.out.println("xxx");
 
     }
 
@@ -148,6 +156,12 @@ public class FlowGraph {
             FlowNode node = getFlowNode(nodeId);
 
             System.out.println("Node " + nodeId.toString() + ":");
+
+            System.out.print("[");
+            for (String reg : node.regSelect.regStackMove.keySet()) {
+                System.out.printf("%s -> %s; ", reg, node.regSelect.regStackMove.get(reg));
+            }
+            System.out.println("]");
 
             for (Integer temp : node.regSelect.curTempId2Reg.keySet()) {
                 System.out.println("\t" + temp + " -> " + node.regSelect.curTempId2Reg.get(temp));

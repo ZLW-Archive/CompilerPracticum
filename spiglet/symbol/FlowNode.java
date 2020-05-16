@@ -20,10 +20,11 @@ public class FlowNode {
     public FlowNode(int _nodeId, FlowGraph _owner) {
         nodeId = _nodeId;
         ownerFlowGraph = _owner;
+        regSelect = new RegSelect();
     }
 
     public void copyRegState(IntervalAnalysis intervalAnalysis) {
-        regSelect = new RegSelect(intervalAnalysis);
+        regSelect.init(intervalAnalysis);
     }
 
     public void addPreNode(FlowNode _node) {
