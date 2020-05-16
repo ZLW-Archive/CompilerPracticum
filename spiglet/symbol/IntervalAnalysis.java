@@ -16,9 +16,11 @@ public class IntervalAnalysis {
     public Vector<Integer> stackMiddleAvailable = new Vector<>();
     public HashMap<Integer, String> curTempId2Stack = new HashMap<>();
 
+    // the start and end node for each temp
     public HashMap<Integer, Integer> tempStartNode = new HashMap<>();
     public HashMap<Integer, Integer> tempEndNode = new HashMap<>();
 
+    // which temps start or end in the corresponding node
     public HashMap<Integer, Vector<Integer>> nodeIdStartTemps = new HashMap<>();
     public HashMap<Integer, Vector<Integer>> nodeIdEndTemps = new HashMap<>();
 
@@ -89,28 +91,26 @@ public class IntervalAnalysis {
             Integer curAssignTemp = curReg2tempId.get(s);
             if (curAssignTemp == -1) {
                 reg = s;
-                break;
+                return reg;
             }
         }
-        if (reg != null) {
-            return reg;
+
+        int lastEndTemp = getLastEndTemp(curTemp);
+        if (lastEndTemp == curTemp) {
+            return null;
         } else {
-            int lastEndTemp = getLastEndTemp(curTemp);
-            if (lastEndTemp == curTemp) {
-                return null;
-            } else {
-                reg = curTempId2Reg.get(lastEndTemp);
-                curTempId2Reg.remove(lastEndTemp);
-                curReg2tempId.put(reg, -1);
+            reg = curTempId2Reg.get(lastEndTemp);
+            curTempId2Reg.remove(lastEndTemp);
+            curReg2tempId.put(reg, -1);
 //                for (String s : curReg2tempId.keySet()) {
 //                    if (curReg2tempId.get(s).equals(lastEndTemp)) {
 //                        curReg2tempId.put(s, -1);
 //                    }
 //                }
-                assignStack(lastEndTemp);
-                return reg;
-            }
+            assignStack(lastEndTemp);
+            return reg;
         }
+
     }
 
     public int getLastEndTemp(int curTemp) {
@@ -129,6 +129,7 @@ public class IntervalAnalysis {
         for (Integer nodeId : _graph.nodeId2flowNode.keySet()) {
             FlowNode node = _graph.getFlowNode(nodeId);
 
+            // maybe there no start temp in this node, so check first
             if (nodeIdStartTemps.containsKey(nodeId)) {
                 for (Integer i : nodeIdStartTemps.get(nodeId)) {
                     String newReg = getNewReg(i);

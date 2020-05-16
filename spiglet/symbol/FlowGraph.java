@@ -23,6 +23,7 @@ public class FlowGraph {
         flowNodeId = 0;
 
         FlowNode entryNode = new FlowNode(0, this);
+        // in spiglet, when a function is called, the parameters will be in the first 20 temps.
         for (int i = 0; i < _paraNum; i++) {
             entryNode.addDefTemp(i);
         }

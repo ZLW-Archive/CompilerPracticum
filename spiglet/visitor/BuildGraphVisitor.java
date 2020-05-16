@@ -371,6 +371,7 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
     public Object visit(SimpleExp n) {
         Vector<Integer> _ret = new Vector<>();
         if (n.f0.which == 0) {
+            // mean that it's a temp
             _ret.add((Integer) n.f0.accept(this));
         }
         return _ret;
