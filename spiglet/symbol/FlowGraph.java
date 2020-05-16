@@ -10,12 +10,18 @@ public class FlowGraph {
     public HashMap<String, Integer> label2nodeId = new HashMap<>();
     public HashMap<Integer, String> pendingEdges = new HashMap<>();
 
+    public int paraNum = 0;
+    public int stackNum = 0;
+    public int maxParaNum = 0;
+
     public FlowGraph(String _name) {
         graphName = _name;
         flowNodeId = 0;
 
         FlowNode entryNode = new FlowNode(0, this);
         nodeId2flowNode.put(0, entryNode);
+
+        paraNum = 0;
     }
 
     public FlowGraph(String _name, Integer _paraNum) {
@@ -28,6 +34,8 @@ public class FlowGraph {
             entryNode.addDefTemp(i);
         }
         nodeId2flowNode.put(0, entryNode);
+
+        paraNum = _paraNum;
     }
 
     public FlowNode getEntryNode() {
@@ -75,6 +83,15 @@ public class FlowGraph {
 //        printNodeRegSelect();
 //        System.out.println("xxx");
 
+        // calculate the three numbers for a procedure.
+        int stackNumBuffer = 0;
+        if (paraNum > 4) {
+            stackNumBuffer += (paraNum - 4);
+        }
+        stackNumBuffer += linearChecker.maxStackPos;
+        stackNumBuffer += linearChecker.useSaveReg.size();
+
+        stackNum = stackNumBuffer;
     }
 
     public HashSet<Integer> AND(HashSet<Integer> x, HashSet<Integer> y) {

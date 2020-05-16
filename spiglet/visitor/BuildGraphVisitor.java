@@ -317,6 +317,11 @@ public class BuildGraphVisitor extends GJNoArguDepthFirst<Object> {
             curUseTempIds.add((Integer) i);
         }
 
+        int callParaNum = tempList.size();
+        if (callParaNum > curFlowGraph.maxParaNum) {
+            curFlowGraph.maxParaNum = callParaNum;
+        }
+
         return curUseTempIds;
     }
 

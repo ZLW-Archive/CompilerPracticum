@@ -1,6 +1,7 @@
 package symbol;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 public class IntervalAnalysis {
@@ -8,11 +9,14 @@ public class IntervalAnalysis {
             // "t0", "t1", "t2",
             "t3", "t4", "t5", "t6", "t7", "t8", "t9"};
 
+    public HashSet<String> useSaveReg = new HashSet<>();
+
     public Integer curNodePointer;
     public HashMap<String, Integer> curReg2tempId = new HashMap<>();
     public HashMap<Integer, String> curTempId2Reg = new HashMap<>();
 
     public Integer curStackPos;
+    public Integer maxStackPos = 0;
     public Vector<Integer> stackMiddleAvailable = new Vector<>();
     public HashMap<Integer, String> curTempId2Stack = new HashMap<>();
 
@@ -74,6 +78,7 @@ public class IntervalAnalysis {
             stackPos = "X" + stackPosIndex.toString();
         } else {
             curStackPos++;
+            maxStackPos = curStackPos + 1;
             stackPos = "X" + curStackPos.toString();
         }
         curTempId2Stack.put(temp, stackPos);
@@ -83,8 +88,11 @@ public class IntervalAnalysis {
     public void assignReg(int temp, String reg) {
         curTempId2Reg.put(temp, reg);
         curReg2tempId.put(reg, temp);
-    }
 
+        if (reg.substring(0, 1).equals("s")) {
+            useSaveReg.add(reg);
+        }
+    }
 
     public String getNewReg(int curTemp, FlowNode _node) {
         String reg = null;
