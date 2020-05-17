@@ -88,10 +88,10 @@ public class IntervalAnalysis {
     public void assignReg(int temp, String reg) {
         curTempId2Reg.put(temp, reg);
         curReg2tempId.put(reg, temp);
-
-        if (reg.substring(0, 1).equals("s")) {
-            useSaveReg.add(reg);
-        }
+        useSaveReg.add(reg);
+//        if (reg.substring(0, 1).equals("s")) {
+//            useSaveReg.add(reg);
+//        }
     }
 
     public String getNewReg(int curTemp, FlowNode _node) {
