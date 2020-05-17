@@ -9,7 +9,7 @@ public class IntervalAnalysis {
             // "t0", "t1", "t2",
             "t3", "t4", "t5", "t6", "t7", "t8", "t9"};
 
-    public HashSet<String> useSaveReg = new HashSet<>();
+    public HashSet<String> useSaveRegs = new HashSet<>();
 
     public Integer curNodePointer;
     public HashMap<String, Integer> curReg2tempId = new HashMap<>();
@@ -88,7 +88,7 @@ public class IntervalAnalysis {
     public void assignReg(int temp, String reg) {
         curTempId2Reg.put(temp, reg);
         curReg2tempId.put(reg, temp);
-        useSaveReg.add(reg);
+        useSaveRegs.add(reg);
 //        if (reg.substring(0, 1).equals("s")) {
 //            useSaveReg.add(reg);
 //        }

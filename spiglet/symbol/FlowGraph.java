@@ -10,6 +10,8 @@ public class FlowGraph {
     public HashMap<String, Integer> label2nodeId = new HashMap<>();
     public HashMap<Integer, String> pendingEdges = new HashMap<>();
 
+    public IntervalAnalysis linearChecker;
+
     public int paraNum = 0;
     public int stackNum = 0;
     public int maxParaNum = 0;
@@ -51,6 +53,7 @@ public class FlowGraph {
         flowNodeId++;
         FlowNode exitNode = new FlowNode(flowNodeId, this);
         nodeId2flowNode.put(flowNodeId, exitNode);
+        addEdge(flowNodeId - 1, flowNodeId);
     }
 
     public void addExitNode(int _retTemp) {
@@ -58,6 +61,7 @@ public class FlowGraph {
         FlowNode exitNode = new FlowNode(flowNodeId, this);
         exitNode.addUseTemp(_retTemp);
         nodeId2flowNode.put(flowNodeId, exitNode);
+        addEdge(flowNodeId - 1, flowNodeId);
     }
 
     public void finishGraph() {
@@ -76,7 +80,7 @@ public class FlowGraph {
 //            System.out.println(cnt++);
         }
 
-        IntervalAnalysis linearChecker = new IntervalAnalysis();
+        linearChecker = new IntervalAnalysis();
         linearChecker.setTempStartEnd(this);
         linearChecker.setRegSelect(this);
 
@@ -90,7 +94,7 @@ public class FlowGraph {
         }
         stackNumBuffer += linearChecker.maxStackPos;
         if (!graphName.equals("MAIN")) {
-            stackNumBuffer += linearChecker.useSaveReg.size();
+            stackNumBuffer += linearChecker.useSaveRegs.size();
         }
 
         stackNum = stackNumBuffer;

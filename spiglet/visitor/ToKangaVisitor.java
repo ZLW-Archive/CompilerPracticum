@@ -7,6 +7,7 @@ import syntaxtree.*;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
@@ -15,6 +16,7 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     public HashMap<String, FlowGraph> label2flowGraph;
     public FlowGraph curFlowGraph;
     public FlowNode curFlowNode;
+    public int curStackOffset = 0; // because of the saving regs and too many paras
 
     public boolean lineLabelFlag;
 
@@ -57,7 +59,9 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     }
 
     public String getStackPos(String pos) {
-        return pos.substring(1);
+        String strPos = pos.substring(1);
+        int intPos = Integer.parseInt(strPos);
+        return Integer.toString(intPos + curStackOffset);
     }
 
     public String pos2reg(String pos) {
@@ -188,13 +192,14 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     public Object visit(Procedure n, Object argu) {
         Object _ret = null;
         String label = (String) n.f0.accept(this, argu);
-        printer.print(label + "[%d][%d][%d]\n", curFlowGraph.paraNum, curFlowGraph.stackNum, curFlowGraph.maxParaNum);
         curFlowGraph = label2flowGraph.get(label);
         curFlowNode = curFlowGraph.getEntryNode();
+        printer.print(label + "[%d][%d][%d]\n", curFlowGraph.paraNum, curFlowGraph.stackNum, curFlowGraph.maxParaNum);
 
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
+
         n.f4.accept(this, argu);
         return _ret;
     }
@@ -400,11 +405,70 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
      */
     public Object visit(StmtExp n, Object argu) {
         Object _ret = null;
-        n.f0.accept(this, argu);
+
+        // curFlowNode is the entry node
+        int paraNum = curFlowGraph.paraNum;
+
+        // store the saving regs
+        int regStackPos = 0;
+        if (paraNum > 4) {
+            regStackPos = paraNum - 4;
+        }
+        HashSet<String> useSaveRegs = curFlowGraph.linearChecker.useSaveRegs;
+        HashMap<String, Integer> useSaveReg2stackPos = new HashMap<>();
+        for (String saveReg : useSaveRegs) {
+            printer.print("    ");
+            printer.print("ASTORE SPILLEDARG %d %s\n", regStackPos, saveReg);
+            useSaveReg2stackPos.put(saveReg, regStackPos);
+            regStackPos += 1;
+        }
+        curStackOffset = regStackPos;
+
+        for (int i = 0; i < paraNum; i++) {
+            String pos = curFlowNode.regSelect.tempId2Pos(i);
+            if (pos == null) {
+                continue;
+            }
+
+            String reg = null;
+            if (i < 4) {
+                reg = "a" + i;
+            }
+            else {
+                int passArgPos = i - 4 + 1;
+                int stackPos = passArgPos - 1;
+
+                for (String tempReg : tempRegNames) {
+                    if (! tempReg2stack.containsKey(tempReg)) {
+                        reg = tempReg;
+                    }
+                }
+                printer.print("    ");
+                printer.print("ALOAD %s SPILLEDARG %s\n", reg, stackPos);
+            }
+            printer.print("    ");
+            if (inStack(pos)) {
+                printer.print("ASTORE SPILLEDARG %s %s\n", getStackPos(pos), reg);
+            }
+            else {
+                printer.print("MOVE %s %s\n", pos, reg);
+            }
+        }
+
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
-        n.f3.accept(this, argu);
-        n.f4.accept(this, argu);
+
+        curFlowNode = curFlowGraph.getNextNode(curFlowNode);
+        printer.print("    ");
+        String retReg = (String) n.f3.accept(this, Boolean.TRUE);
+        printer.print("MOVE v0 %s\n", retReg);
+
+        // load the saving regs
+        for (String saveReg : useSaveRegs) {
+            printer.print("    ");
+            printer.print("ALOAD %s SPILLEDARG %d\n", saveReg, useSaveReg2stackPos.get(saveReg));
+        }
+        printer.print("END\n");
+
         return _ret;
     }
 
