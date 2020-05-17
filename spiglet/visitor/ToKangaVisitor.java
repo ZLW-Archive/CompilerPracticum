@@ -7,6 +7,7 @@ import syntaxtree.*;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     private Printer printer = new Printer();
@@ -20,6 +21,8 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     public String[] tempRegNames = {"t0", "t1", "t2"};
     public HashMap<String, String> tempReg2stack = new HashMap<>();
     public HashMap<String, String> stack2tempReg = new HashMap<>();
+
+    public HashMap<String, String> exprNotes = new HashMap<>();
 
     public ToKangaVisitor(HashMap<String, FlowGraph> _label2flowGraph) {
         label2flowGraph = new HashMap<>(_label2flowGraph);
@@ -39,6 +42,14 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     public void clearTempReg() {
         stack2tempReg.clear();
         tempReg2stack.clear();
+    }
+
+    public void removeTempReg(String tempReg) {
+        if (tempReg2stack.containsKey(tempReg)) {
+            String stackPos = tempReg2stack.get(tempReg);
+            stack2tempReg.remove(stackPos);
+            tempReg2stack.remove(tempReg);
+        }
     }
 
     public boolean inStack(String pos) {
@@ -79,10 +90,11 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
 
     public Object visit(NodeListOptional n, Object argu) {
         if (n.present()) {
-            Object _ret = null;
+            Vector<Object> _ret = new Vector<>();
             int _count = 0;
             for (Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-                e.nextElement().accept(this, argu);
+                Object ele_ret = e.nextElement().accept(this, argu);
+                _ret.add(ele_ret);
                 _count++;
             }
             return _ret;
@@ -201,6 +213,7 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
         Object _ret = null;
         curFlowNode = curFlowGraph.getNextNode(curFlowNode);
         clearTempReg();
+        exprNotes.clear();
         for (String reg : curFlowNode.regSelect.regStackMove.keySet()) {
             String stackPos = curFlowNode.regSelect.regStackMove.get(reg);
             printer.print("ASTORE SPILLEDARG %s %s\n", getStackPos(stackPos), reg);
@@ -334,8 +347,19 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
             return _ret;
         }
         String reg = pos2reg(pos);
-        printer.print("MOVE %s EXP()\n", reg);
-        n.f2.accept(this, argu);
+
+        n.f2.accept(this, Boolean.TRUE);
+
+        printer.print("MOVE %s ", reg);
+
+        n.f2.accept(this, Boolean.FALSE);
+
+        printer.print("\n");
+
+        if (inStack(pos)) {
+            writeBackStack(pos);
+        }
+
         return _ret;
     }
 
@@ -346,9 +370,12 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     public Object visit(PrintStmt n, Object argu) {
         Object _ret = null;
         n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
 
-        printer.print("PRINT EXP()\n");
+        n.f1.accept(this, Boolean.TRUE);
+        printer.print("PRINT ");
+        n.f1.accept(this, Boolean.FALSE);
+        printer.print("\n");
+
         return _ret;
     }
 
@@ -390,11 +417,57 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
      */
     public Object visit(Call n, Object argu) {
         Object _ret = null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
-        n.f3.accept(this, argu);
-        n.f4.accept(this, argu);
+
+        if (argu instanceof Boolean) {
+            if ((Boolean) argu) {
+                String callTempReg = null;
+                for (String tempReg : tempRegNames) {
+                    if (!tempReg2stack.containsKey(tempReg)) {
+                        callTempReg = tempReg;
+                        break;
+                    }
+                }
+                Vector<Object> paraList = (Vector<Object>) n.f3.accept(this, argu);
+                int paraNum = paraList.size();
+                for (int i = 0; i < paraNum; i ++) {
+                    Integer tempId = (Integer) paraList.get(i);
+                    String pos = curFlowNode.regSelect.tempId2Pos(tempId);
+                    String reg = pos;
+                    if (inStack(pos)) {
+                        reg = callTempReg;
+                        printer.print("ALOAD %s SPILLEDARG %s\n", reg, getStackPos(pos));
+                        printer.print("    ");
+                    }
+                    if (i < 4) {
+                        printer.print("MOVE a%d %s\n", i, reg);
+                        printer.print("    ");
+                    }
+                    else {
+                        int passArgPos = i - 4 + 1;
+                        printer.print("PASSARG %d %s\n", passArgPos, reg);
+                        printer.print("    ");
+                    }
+                }
+                String callMethodReg = (String) n.f1.accept(this, Boolean.TRUE);
+                printer.print("CALL %s\n", callMethodReg);
+                printer.print("    ");
+                printer.print("MOVE %s v0\n", callTempReg);
+                printer.print("    ");
+                exprNotes.put("call", callTempReg);
+                // TODO: before call and after call, save the temp;
+            }
+            else {
+                String callTempReg = exprNotes.get("call");
+                printer.print(callTempReg);
+            }
+        }
+
+
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
+//        n.f3.accept(this, argu);
+//        n.f4.accept(this, argu);
         return _ret;
     }
 
@@ -404,6 +477,11 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
      */
     public Object visit(HAllocate n, Object argu) {
         Object _ret = null;
+        if (argu instanceof Boolean) {
+            if (! (Boolean) argu) {
+               printer.print("HALLOCATE ");
+            }
+        }
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         return _ret;
@@ -416,9 +494,24 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
      */
     public Object visit(BinOp n, Object argu) {
         Object _ret = null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+
+        if (argu instanceof Boolean) {
+            if ((Boolean) argu) {
+                Integer tempId = (Integer) n.f1.accept(this, argu);
+                String pos = curFlowNode.regSelect.tempId2Pos(tempId);
+                String reg = pos2reg(pos);
+                exprNotes.put("bin_op", reg);
+                n.f2.accept(this, argu);
+            }
+            else {
+                n.f0.accept(this, argu);
+
+                String reg = exprNotes.get("bin_op");
+                printer.print(" " + reg + " ");
+                n.f2.accept(this, argu);
+            }
+        }
+
         return _ret;
     }
 
@@ -431,6 +524,9 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
     public Object visit(Operator n, Object argu) {
         Object _ret = null;
         n.f0.accept(this, argu);
+        if (argu instanceof Boolean && !(Boolean) argu) {
+            printer.print(((NodeToken) n.f0.choice).tokenImage);
+        }
         return _ret;
     }
 
@@ -441,7 +537,30 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
      */
     public Object visit(SimpleExp n, Object argu) {
         Object _ret = null;
-        n.f0.accept(this, argu);
+        Object visit_ret = n.f0.accept(this, argu);
+
+        if (argu instanceof Boolean) {
+            if ((Boolean) argu) {
+                if (n.f0.which == 0) {
+                    int tempId = (Integer) visit_ret;
+                    String pos = curFlowNode.regSelect.tempId2Pos(tempId);
+                    String reg = pos2reg(pos);
+                    exprNotes.put("simple_expr", reg);
+                    return reg;
+                }
+                return visit_ret.toString();
+            }
+            else {
+                if (n.f0.which == 0) {
+                    String reg = exprNotes.get("simple_expr");
+                    printer.print(reg);
+                }
+                else {
+                    printer.print(visit_ret.toString());
+                }
+            }
+        }
+
         return _ret;
     }
 

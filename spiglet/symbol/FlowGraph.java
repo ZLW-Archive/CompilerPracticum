@@ -89,7 +89,9 @@ public class FlowGraph {
             stackNumBuffer += (paraNum - 4);
         }
         stackNumBuffer += linearChecker.maxStackPos;
-        stackNumBuffer += linearChecker.useSaveReg.size();
+        if (!graphName.equals("MAIN")) {
+            stackNumBuffer += linearChecker.useSaveReg.size();
+        }
 
         stackNum = stackNumBuffer;
     }
