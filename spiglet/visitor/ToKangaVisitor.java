@@ -76,7 +76,7 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
 
     public void writeBackStack(String stackPos) {
         String reg = stack2tempReg.get(stackPos);
-        printer.print("    ASTORE SILLEDARG %s %s\n", getStackPos(stackPos), reg);
+        printer.print("    ASTORE SPILLEDARG %s %s\n", getStackPos(stackPos), reg);
     }
 
     //
