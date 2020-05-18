@@ -17,8 +17,10 @@ public class SPiglet2Kanga {
         try {
             String fileName = "_MyTest";
             String filePath = "./outputs/" + fileName + ".spg";
+            String outputPath = "./outputs/" + fileName + ".kg";
             if (args.length != 0) {
                 filePath = args[0];
+                outputPath = args[0] + ".kg";
             }
             InputStream in = new FileInputStream(filePath);
             SpigletParser spigletParser = new SpigletParser(in);
@@ -27,7 +29,7 @@ public class SPiglet2Kanga {
             root.accept(buildGraphVisitor);
             ToKangaVisitor toKangaVisitor = new ToKangaVisitor(buildGraphVisitor.label2flowGraph);
 
-            PrintStream ps = new PrintStream(new FileOutputStream("./outputs/" + fileName + ".kg"));
+            PrintStream ps = new PrintStream(new FileOutputStream(outputPath));
             System.setOut(ps);
 
             root.accept(toKangaVisitor, null);
