@@ -1,7 +1,6 @@
 import syntaxtree.Node;
 import visitor.BuildGraphVisitor;
 import visitor.ToKangaVisitor;
-import visitor.ToKangaVisitor_t;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
