@@ -1,4 +1,4 @@
-package symbol;
+package mini.symbol;
 
 public class MIdentifier extends MType {
 

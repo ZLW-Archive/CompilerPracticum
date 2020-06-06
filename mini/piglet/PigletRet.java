@@ -1,6 +1,6 @@
-package piglet;
+package mini.piglet;
 
-import symbol.MType;
+import mini.symbol.MType;
 
 import java.util.Vector;
 

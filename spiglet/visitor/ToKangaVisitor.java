@@ -1,9 +1,7 @@
-package visitor;
-
-import symbol.FlowGraph;
-import symbol.FlowNode;
-import symbol.Printer;
-import syntaxtree.*;
+package spiglet.visitor;
+import spiglet.symbol.*;
+import spiglet.*;
+import spiglet.syntaxtree.*;
 
 import java.util.Enumeration;
 import java.util.HashMap;

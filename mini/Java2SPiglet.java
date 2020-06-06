@@ -1,7 +1,8 @@
+package mini;
 import java.io.*;
-import visitor.*;
-import syntaxtree.*;
-import symbol.*;
+import mini.visitor.*;
+import mini.syntaxtree.*;
+import mini.symbol.*;
 
 public class Java2SPiglet {
     int i;
@@ -18,7 +19,7 @@ public class Java2SPiglet {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
-            String outPath = "./outputs/" + fileName + ".spg";
+            String outPath = "./temp/" + fileName + ".spg";
             PrintStream ps = new PrintStream(new FileOutputStream(outPath));
             System.setOut(ps);
             root.accept(new ToSPigletVisitor((MClassList) allClassList), null);

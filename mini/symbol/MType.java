@@ -1,4 +1,4 @@
-package symbol;
+package mini.symbol;
 
 import java.util.HashMap;
 

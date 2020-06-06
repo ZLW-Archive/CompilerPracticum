@@ -1,8 +1,8 @@
-package visitor;
+package mini.visitor;
 
-import symbol.*;
-import syntaxtree.*;
-import minijava.ErrorPrint;
+import mini.symbol.*;
+import mini.syntaxtree.*;
+import mini.minijava.ErrorPrint;
 
 public class BuildSymbolTableVisitor extends GJDepthFirst<MType, MType> {
 

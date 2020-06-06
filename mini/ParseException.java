@@ -9,6 +9,11 @@
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
+package mini;
+import java.io.*;
+import mini.visitor.*;
+import mini.syntaxtree.*;
+import mini.symbol.*;
 public class ParseException extends Exception {
 
   /**

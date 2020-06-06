@@ -1,14 +1,11 @@
-package visitor;
+package mini.visitor;
 
-import minijava.ErrorPrint;
-import minijava.Pair;
-import piglet.PigletLabels;
-import piglet.PigletRet;
-import symbol.MClass;
-import symbol.MClassList;
-import symbol.MMethod;
-import symbol.MType;
-import syntaxtree.*;
+import mini.minijava.ErrorPrint;
+import mini.minijava.Pair;
+import mini.piglet.PigletLabels;
+import mini.piglet.PigletRet;
+import mini.symbol.*;
+import mini.syntaxtree.*;
 
 import java.util.HashMap;
 import java.util.Vector;

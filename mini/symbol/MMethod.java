@@ -1,8 +1,8 @@
-package symbol;
+package mini.symbol;
 
 import java.util.HashMap;
 import java.util.Vector;
-import minijava.*;
+import mini.minijava.*;
 
 public class MMethod extends MIdentifier {
 

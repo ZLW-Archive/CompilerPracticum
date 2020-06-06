@@ -1,4 +1,4 @@
-package minijava;
+package mini.minijava;
 
 public class ErrorPrint {
 

@@ -1,11 +1,11 @@
-package visitor;
+package mini.visitor;
 
-import minijava.*;
-import symbol.*;
-import syntaxtree.*;
-import minijava.ErrorPrint;
+import mini.minijava.*;
+import mini.symbol.*;
+import mini.syntaxtree.*;
+import mini.minijava.ErrorPrint;
 
-import piglet.*;
+import mini.piglet.*;
 
 import java.util.HashMap;
 import java.util.Vector;

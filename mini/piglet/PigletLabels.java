@@ -1,6 +1,6 @@
-package piglet;
+package mini.piglet;
 
-import symbol.*;
+import mini.symbol.*;
 
 import java.util.HashMap;
 

@@ -3,7 +3,7 @@
 /**
  * Describes the input token stream.
  */
-
+package kanga;
 public class Token {
 
   /**

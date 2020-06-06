@@ -1,8 +1,8 @@
+package mini;
 import java.io.*;
-import visitor.*;
-import syntaxtree.*;
-import symbol.*;
-
+import mini.visitor.*;
+import mini.syntaxtree.*;
+import mini.symbol.*;
 public class JavaTypeCheck {
     int i;
     int args;

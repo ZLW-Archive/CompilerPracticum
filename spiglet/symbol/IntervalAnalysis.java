@@ -1,4 +1,4 @@
-package symbol;
+package spiglet.symbol;
 
 import java.util.HashMap;
 import java.util.HashSet;

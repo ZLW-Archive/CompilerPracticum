@@ -1,6 +1,7 @@
-import syntaxtree.Node;
-import visitor.BuildGraphVisitor;
-import visitor.ToKangaVisitor;
+package spiglet;
+import spiglet.syntaxtree.Node;
+import spiglet.visitor.BuildGraphVisitor;
+import spiglet.visitor.ToKangaVisitor;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,8 +16,8 @@ public class SPiglet2Kanga {
 
         try {
             String fileName = "_MyTest";
-            String filePath = "./outputs/" + fileName + ".spg";
-            String outputPath = "./outputs/" + fileName + ".kg";
+            String filePath = "./temp/" + fileName + ".spg";
+            String outputPath = "./temp/" + fileName + ".kg";
             if (args.length != 0) {
                 filePath = args[0];
                 outputPath = args[0] + ".kg";

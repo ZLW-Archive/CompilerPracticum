@@ -4,7 +4,7 @@
  * An implementation of interface CharStream, where the stream is assumed to
  * contain only ASCII characters (with java-like unicode escape processing).
  */
-
+package kanga;
 public class JavaCharStream
 {
 /** Whether parser is static. */
