@@ -19,6 +19,13 @@ public class ToMIPSVisitor extends GJDepthFirst<MIPSReturn, MIPSLabel> {
     // User-generated visitor methods below
     //
 
+    /* stack frame:
+     * fp -> return address
+     *       last fp
+     *       SPILLARG1
+     *       --------
+     * sp -> last SPILL
+     */
     /**
      * f0 -> "MAIN"
      * f1 -> "["
@@ -56,12 +63,12 @@ public class ToMIPSVisitor extends GJDepthFirst<MIPSReturn, MIPSLabel> {
                 ".globl main\n" +
                 "main:\n");
         System.out.print("\tmove $fp, $sp\n");
-        System.out.printf("\tsubu $sp, $sp, %d\n", (y+3)*4);
+        System.out.printf("\tsubu $sp, $sp, %d\n", (y+2)*4);
         System.out.print("\tsw $ra, -4($fp)\n");
         n.f10.accept(this, argu);
 
         System.out.print("\tlw $ra, -4($fp)\n");
-        System.out.printf("\taddu $sp, $sp, %d\n", (y+3)*4);
+        System.out.printf("\taddu $sp, $sp, %d\n", (y+2)*4);
         System.out.print("\tj $ra\n");
         n.f11.accept(this, argu);
         n.f12.accept(this, argu);
@@ -135,14 +142,16 @@ public class ToMIPSVisitor extends GJDepthFirst<MIPSReturn, MIPSLabel> {
         n.f8.accept(this, argu);
         int z = Integer.valueOf(n.f8.f0.toString()); //not used
         n.f9.accept(this, argu);
+
+        //total frame length = y + 2 (return address and previous fp)
         System.out.print("\tsw $fp, -8($sp)\n");
         System.out.print("\tmove $fp, $sp\n");
-        System.out.printf("\tsubu $sp, $sp, %d\n", (y+3)*4);
+        System.out.printf("\tsubu $sp, $sp, %d\n", (y+2)*4);
         System.out.print("\tsw $ra, -4($fp)\n");
         n.f10.accept(this, argu);
         System.out.print("\tlw $ra, -4($fp)\n");
         System.out.printf("\tlw $fp, -8($fp)\n");
-        System.out.printf("\taddu $sp, $sp, %d\n", (y+3)*4);
+        System.out.printf("\taddu $sp, $sp, %d\n", (y+2)*4);
         System.out.printf("\t j $ra\n");
         n.f11.accept(this, argu);
         return _ret;
@@ -259,6 +268,7 @@ public class ToMIPSVisitor extends GJDepthFirst<MIPSReturn, MIPSLabel> {
         n.f0.accept(this, argu);
         MIPSReturn p0 = n.f1.accept(this, argu);
         MIPSReturn p = n.f2.accept(this, argu);
+        //specific instruction depends on the type of EXP
         if (p.ifreg)
             System.out.printf("\tmove %s, %s\n", p0.reg, p.reg);
         else if(p.ifint)

@@ -138,11 +138,6 @@ public class ToPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     //create the main method, first initialize the global method table, then invoke the original main method
     public PigletRet visit(Goal n, PigletLabels argu)
     {
-        System.out.printf("MAIN\n");
-        System.out.printf("    MOVE TEMP %d CALL Initial_methodlist (0)\n", GLOBAL_CLASS_LIST);
-        System.out.printf("    MOVE TEMP 0 CALL MAIN_DUMMY (0 TEMP %d)\n", GLOBAL_CLASS_LIST);
-        System.out.printf("END\n");
-        printMethodTable();
         PigletLabels p = new PigletLabels(0);
         n.f0.accept(this, p);
         n.f1.accept(this, p);
@@ -188,7 +183,11 @@ public class ToPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f12.accept(this, argu);
         n.f13.accept(this, argu);
         n.f14.accept(this, argu);
-
+        System.out.printf("MAIN\n");
+        System.out.printf("    MOVE TEMP %d CALL Initial_methodlist (0)\n", GLOBAL_CLASS_LIST);
+        System.out.printf("    MOVE TEMP 0 CALL %s_main (0 TEMP %d)\n", n.f1.f0.tokenImage, GLOBAL_CLASS_LIST);
+        System.out.printf("END\n");
+        printMethodTable();
         //get main method info from the symbol table
         String className = n.f1.f0.tokenImage;
         argu.mc = symbolTable.getClass(className);
@@ -202,7 +201,7 @@ public class ToPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         PigletLabels p = new PigletLabels(argu);
         p.intend += 4;
 
-        System.out.printf("MAIN_DUMMY [2]\n");
+        System.out.printf("%s_main [2]\n", n.f1.f0.tokenImage);
         System.out.printf("BEGIN\n");
 
         n.f15.accept(this, p);
