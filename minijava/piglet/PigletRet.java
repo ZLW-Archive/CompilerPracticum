@@ -1,8 +1,6 @@
-package mini.piglet;
+package minijava.piglet;
 
-import mini.symbol.MType;
-
-import java.util.Vector;
+import minijava.symbol.MType;
 
 public class PigletRet
 {

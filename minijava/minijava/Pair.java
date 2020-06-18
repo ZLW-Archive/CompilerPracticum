@@ -1,4 +1,4 @@
-package mini.minijava;
+package minijava.minijava;
 
 public class Pair<F, S> extends java.util.AbstractMap.SimpleImmutableEntry<F, S> {
 

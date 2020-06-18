@@ -1,4 +1,4 @@
-package mini.symbol;
+package minijava.symbol;
 
 public class MVar extends MIdentifier {
 

@@ -1,6 +1,4 @@
-package mini.symbol;
-
-import java.util.HashMap;
+package minijava.symbol;
 
 public class MType {
 //    type: Class, Method ...

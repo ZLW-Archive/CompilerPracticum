@@ -1,4 +1,4 @@
-package mini.symbol;
+package minijava.symbol;
 
 import java.util.*;
 
