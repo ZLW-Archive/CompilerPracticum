@@ -26,7 +26,7 @@
     - 在遇到`<IDENTIFIER>`时，检查是否是未声明的变量，通过参数`argu`的类型分类讨论
     - 检查函数调用时，通过全局变量`curFormalParaCheckMethod`传递当前需要检查的方法，通过`MClass::startCheckFormalPara(), checkingFormalPara(String curParaType, MClassList allClassList), endCheckFormalPara()`，以及构造符号表时记录的参数顺序，完成检查实际参数和声明参数是否匹配
 
-## 三、sPiglet $\to$ kanga
+## 三、sPiglet -> kanga
 
 1. 定义符号表：
     - `FlowNode`：流图中的基本块（由于大作业时编译正课还没学相关知识，于是这里的基本块由单条语句组成），包含`in`、`out`、`def`、`use`等临时变量信息和`pre`、`next`流图结构信息
