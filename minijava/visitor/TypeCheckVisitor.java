@@ -168,7 +168,6 @@ public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
         /*
         * TODO: checks:
         *  1. return type check
-        *  2. override
         * */
         MType _ret=null;
 

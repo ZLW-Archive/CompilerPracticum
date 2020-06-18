@@ -96,7 +96,14 @@ public class MClass extends MIdentifier {
 
     public boolean insertMethod(MMethod method) {
         String name = method.getName();
-        if (methodHashMap.containsKey(name) || (extendClass != null && extendClass.getMethod(name) != null)) {
+        //  BUG!!! We cannot say if ancestors have the same-name method, the cur method cannot be inserted, since
+        //  the method can be overwrite. BUT this method is only used before we set all the extend relation,
+        //  so the extendClass here is always null.
+        //  FIX FINISH !
+//        if (methodHashMap.containsKey(name) || (extendClass != null && extendClass.getMethod(name) != null)) {
+//            return false;
+//        }
+        if (methodHashMap.containsKey(name)) {
             return false;
         }
         methodHashMap.put(name, method);
