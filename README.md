@@ -1,3 +1,8 @@
-# CompilerPracticum
+# 编译实习 课程项目
 
-This is a cooperation project by Zilong Wang and Tianyi Fei for Compiler Practicum Course at Peking University.
+王子龙、费天一
+
+ ***miniJava -> piglet -> sPiglet -> kanga -> mips***  
+
+## 一、miniJava 类型检查
+
