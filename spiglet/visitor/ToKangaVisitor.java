@@ -77,6 +77,58 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
         printer.print("    ASTORE SPILLEDARG %s %s\n", getStackPos(stackPos), reg);
     }
 
+    public void movePos(String _old, String _new, String tempReg) {
+        String reg;
+        if (inStack(_old)) {
+            reg = tempReg;
+            printer.print("ALOAD %s SPILLEDARG %s\n", reg, getStackPos(_old));
+            printer.print("    ");
+        }
+        else {
+            reg = _old;
+        }
+        if (inStack(_new)) {
+            printer.print("ASTORE SPILLEDARG %s %s\n", getStackPos(_new), reg);
+        }
+        else {
+            printer.print("MOVE %s %s\n", _new, reg);
+        }
+        printer.print("    ");
+    }
+
+    public void changeRegSelectStatus(RegSelect _old, RegSelect _new) {
+        HashMap<Integer, String> oldMap = _old.generateAllMap();
+        HashMap<Integer, String> newMap = _new.generateAllMap();
+        HashMap<String, Integer> oldRevMap = _old.generateReverseMap();
+//        HashMap<String, Integer> newRevMap = _new.generateReverseMap();
+
+        String tempReg1 = getTempReg("TEMP1");
+        String tempReg2 = getTempReg("TEMP2");
+
+        for (Integer tempId : newMap.keySet()) {
+            String newPos = newMap.get(tempId);
+            String oldPos = oldMap.get(tempId);
+
+            if (oldPos == null) {
+                continue;
+            }
+
+            if (! newPos.equals(oldPos)) {
+                // swap the two pos
+                Integer tempToSwap = oldRevMap.get(newPos);
+                if (tempToSwap != null) {
+                    movePos(newPos, tempReg1, tempReg2);
+                }
+                movePos(oldPos, newPos, tempReg2);
+                if (tempToSwap != null) {
+                    movePos(tempReg1, oldPos, tempReg2);
+                    oldMap.put(tempToSwap, oldPos);
+                    oldRevMap.put(oldPos, tempToSwap);
+                }
+            }
+        }
+    }
+
     //
     // Auto class visitors--probably don't need to be overridden.
     //
@@ -257,9 +309,24 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
         Integer tempId = (Integer) n.f1.accept(this, argu);
         String label = (String) n.f2.accept(this, argu);
 
-        String pos = curFlowNode.regSelect.tempId2Pos(tempId);
+        Integer targetNodeId = curFlowGraph.label2nodeId.get(label);
+        FlowNode targetNode = curFlowGraph.nodeId2flowNode.get(targetNodeId);
+
+        RegSelect curNodeRegSelect = curFlowNode.regSelect;
+        RegSelect targetRegSelect = targetNode.regSelect;
+
+        changeRegSelectStatus(curNodeRegSelect, targetRegSelect);
+
+//        String pos = curFlowNode.regSelect.tempId2Pos(tempId);
+        String pos = targetNode.regSelect.tempId2Pos(tempId);
+        if (pos == null) {
+            pos = curFlowNode.regSelect.tempId2Pos(tempId);
+        }
         String reg = pos2reg(pos);
         printer.print("CJUMP %s %s\n", reg, label);
+        printer.print("    ");
+        changeRegSelectStatus(targetRegSelect, curNodeRegSelect);
+        printer.print("NOOP\n");
         return _ret;
     }
 
@@ -271,6 +338,15 @@ public class ToKangaVisitor extends GJDepthFirst<Object, Object>  {
         Object _ret = null;
         n.f0.accept(this, argu);
         String label = (String) n.f1.accept(this, argu);
+
+        Integer targetNodeId = curFlowGraph.label2nodeId.get(label);
+        FlowNode targetNode = curFlowGraph.nodeId2flowNode.get(targetNodeId);
+
+        RegSelect curNodeRegSelect = curFlowNode.regSelect;
+        RegSelect targetRegSelect = targetNode.regSelect;
+
+        changeRegSelectStatus(curNodeRegSelect, targetRegSelect);
+
         printer.print("JUMP %s\n", label);
         return _ret;
     }

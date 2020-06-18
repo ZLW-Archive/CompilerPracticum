@@ -22,6 +22,32 @@ public class RegSelect {
         curTempId2Reg = new HashMap<>(intervalAnalysis.curTempId2Reg);
     }
 
+    public HashMap<Integer, String> generateAllMap () {
+        HashMap<Integer, String> ret = new HashMap<>();
+        for (Integer key : curTempId2Reg.keySet()) {
+            String val = curTempId2Reg.get(key);
+            ret.put(key, val);
+        }
+        for (Integer key : curTempId2Stack.keySet()) {
+            String val = curTempId2Stack.get(key);
+            ret.put(key, val);
+        }
+        return ret;
+    }
+
+    public HashMap<String, Integer> generateReverseMap () {
+        HashMap<String, Integer> ret = new HashMap<>();
+        for (Integer key : curTempId2Reg.keySet()) {
+            String val = curTempId2Reg.get(key);
+            ret.put(val, key);
+        }
+        for (Integer key : curTempId2Stack.keySet()) {
+            String val = curTempId2Stack.get(key);
+            ret.put(val, key);
+        }
+        return ret;
+    }
+
     public String tempId2Pos(Integer _tempId) {
         String _ret = null;
         if (curTempId2Reg.containsKey(_tempId)) {
