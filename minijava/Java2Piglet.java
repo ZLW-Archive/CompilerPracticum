@@ -1,15 +1,17 @@
-package mini;
+package minijava;
 import java.io.*;
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
-public class JavaTypeCheck {
+import minijava.visitor.*;
+import minijava.syntaxtree.*;
+import minijava.symbol.*;
+
+public class Java2Piglet {
     int i;
     int args;
     public static void main(String[] args){
         try {
-            String filename = "./test_files/_MyTest.java";
-            InputStream in = new FileInputStream(filename);
+            String fileName = "_MyTest";
+            String filePath = "./test_files/" + fileName + ".java";
+            InputStream in = new FileInputStream(filePath);
             if (in == null)
                 System.out.print("it is null");
             Node root = new MiniJavaParser(in).Goal();
@@ -17,7 +19,11 @@ public class JavaTypeCheck {
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
             root.accept(new TypeCheckVisitor(), allClassList);
-            System.out.println("All Finish!");
+            String outPath = "./outputs/" + fileName + ".p";
+            PrintStream ps = new PrintStream(new FileOutputStream(outPath));
+            System.setOut(ps);
+            root.accept(new ToPigletVisitor((MClassList) allClassList), null);
+//            System.out.println("All Finish!");
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (TokenMgrError e) {

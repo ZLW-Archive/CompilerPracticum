@@ -1,16 +1,12 @@
 import java.io.*;
 import java.util.Scanner;
 
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
-import mini.*;
+import minijava.visitor.*;
+import minijava.symbol.*;
+import minijava.*;
 import spiglet.*;
 import spiglet.visitor.*;
-import spiglet.syntaxtree.*;
-import spiglet.symbol.*;
 import kanga.*;
-import kanga.syntaxtree.*;
 import kanga.visitor.*;
 
 public class Java2MIPS {
@@ -36,7 +32,9 @@ public class Java2MIPS {
             InputStream in = new FileInputStream(filePath);
             if (in == null)
                 System.out.print("it is null");
-            mini.syntaxtree.Node root = new MiniJavaParser(in).Goal();
+
+            // miniJava typeCheck + toSPiglet
+            minijava.syntaxtree.Node root = new MiniJavaParser(in).Goal();
             MType allClassList = new MClassList();
             root.accept(new BuildSymbolTableVisitor(), allClassList);
             ((MClassList) allClassList).printSymbolList(0);
@@ -45,6 +43,8 @@ public class Java2MIPS {
             PrintStream ps = new PrintStream(new FileOutputStream(outPath));
             System.setOut(ps);
             root.accept(new ToSPigletVisitor((MClassList) allClassList), null);
+
+            // SPiglet to Kanga
             in = new FileInputStream(outPath);
             SpigletParser spigletParser = new SpigletParser(in);
             spiglet.syntaxtree.Node root2 = spigletParser.Goal();
@@ -56,6 +56,7 @@ public class Java2MIPS {
             System.setOut(ps);
             root2.accept(toKangaVisitor, null);
 
+            // Kanga to Mips
             in = new FileInputStream(outPath);
             KangaParser kangaParser = new KangaParser(in);
             kanga.syntaxtree.Node root3 = kangaParser.Goal();

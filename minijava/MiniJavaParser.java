@@ -1,9 +1,5 @@
-package mini;
-import java.io.*;
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
-import java.util.Vector;
+package minijava;
+import minijava.syntaxtree.*;
 
 
 public class MiniJavaParser implements MiniJavaParserConstants {

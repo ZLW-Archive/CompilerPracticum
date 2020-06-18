@@ -1,10 +1,10 @@
 import java.io.*;
 import java.util.Scanner;
 
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
-import mini.*;
+import minijava.visitor.*;
+import minijava.syntaxtree.*;
+import minijava.symbol.*;
+import minijava.*;
 
 public class Java2SPiglet {
     //int i;

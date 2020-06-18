@@ -1,3 +1,4 @@
+import spiglet.SpigletParser;
 import spiglet.syntaxtree.Node;
 import spiglet.visitor.BuildGraphVisitor;
 import spiglet.visitor.ToKangaVisitor;
@@ -6,8 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.*;
-import spiglet.*;
+import java.util.Scanner;
 
 public class SPiglet2Kanga {
     public static void main(String[] args) {
@@ -39,7 +39,6 @@ public class SPiglet2Kanga {
             System.setOut(ps);
 
             root.accept(toKangaVisitor, null);
-//            System.out.println("All Finish!");
 
 //            for (String file : fileNames) {
 //                fileName = file;

@@ -1,8 +1,8 @@
-package mini;
+package minijava;
 import java.io.*;
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
+import minijava.visitor.*;
+import minijava.syntaxtree.*;
+import minijava.symbol.*;
 
 public class Java2SPiglet {
     int i;

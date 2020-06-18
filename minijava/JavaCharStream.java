@@ -4,11 +4,8 @@
  * An implementation of interface CharStream, where the stream is assumed to
  * contain only ASCII characters (with java-like unicode escape processing).
  */
-package mini;
-import java.io.*;
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
+package minijava;
+
 public class JavaCharStream
 {
 /** Whether parser is static. */

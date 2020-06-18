@@ -1,16 +1,16 @@
-package mini.visitor;
+package minijava.visitor;
 
-import mini.minijava.ErrorPrint;
-import mini.minijava.Pair;
-import mini.piglet.PigletLabels;
-import mini.piglet.PigletRet;
-import mini.symbol.*;
-import mini.syntaxtree.*;
+import minijava.minijava.*;
+import minijava.symbol.*;
+import minijava.syntaxtree.*;
+import minijava.minijava.ErrorPrint;
+
+import minijava.piglet.*;
 
 import java.util.HashMap;
 import java.util.Vector;
 
-public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
+public class ToPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 {
     //The symbol List
     MClassList symbolTable;
@@ -35,7 +35,7 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     static final int GLOBAL_CLASS_LIST = 1;
     static final int THIS_POINTER = 0;
 
-    public ToSPigletVisitor(MClassList _sl)
+    public ToPigletVisitor(MClassList _sl)
     {
         symbolTable = _sl;
         temp = 21;
@@ -73,10 +73,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //fill in the table, here subclass methods overrides
         for (String s: methodlist.keySet())
-        {
-            System.out.printf("    MOVE TEMP 0 %s\n", methodlist.get(s).getFirst());
-            System.out.printf("    HSTORE TEMP %d %d TEMP 0\n", newtemp, methodlist.get(s).getSecond());
-        }
+            System.out.printf("    HSTORE TEMP %d %d %s\n", newtemp, methodlist.get(s).getSecond(), methodlist.get(s).getFirst());
+
         //put the list into the global method lists
         System.out.printf("    HSTORE TEMP %d %d TEMP %d\n", GLOBAL_CLASS_LIST, num * 4, newtemp);
         methodList.put(x, new Pair<>(num, methodlist));
@@ -114,6 +112,23 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         return temp++;
     }
 
+    //print the intend for the output
+    public void PrintIntend(int intend, String s)
+    {
+        int length = s.length();
+        if (length + 1 < intend)
+        {
+            System.out.print(s);
+            for (int i = 0;i<intend-length;++i)
+                System.out.print(' ');
+        }
+        else
+        {
+            System.out.print(s+"\n");
+            for (int i=0;i<intend;++i)
+                System.out.print(' ');
+        }
+    }
 
     /**
      * f0 -> MainClass()
@@ -169,9 +184,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f13.accept(this, argu);
         n.f14.accept(this, argu);
         System.out.printf("MAIN\n");
-        System.out.printf("    MOVE TEMP 0 0\n");
-        System.out.printf("    MOVE TEMP %d CALL Initial_methodlist (TEMP 0)\n", GLOBAL_CLASS_LIST);
-        System.out.printf("    MOVE TEMP 0 CALL %s_main (TEMP 0 TEMP %d)\n", n.f1.f0.tokenImage, GLOBAL_CLASS_LIST);
+        System.out.printf("    MOVE TEMP %d CALL Initial_methodlist (0)\n", GLOBAL_CLASS_LIST);
+        System.out.printf("    MOVE TEMP 0 CALL %s_main (0 TEMP %d)\n", n.f1.f0.tokenImage, GLOBAL_CLASS_LIST);
         System.out.printf("END\n");
         printMethodTable();
         //get main method info from the symbol table
@@ -193,9 +207,10 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f15.accept(this, p);
         n.f16.accept(this, p);
         n.f17.accept(this, p);
+        PrintIntend(p.intend, "");
 
         //This is a fake main, so return is needed
-        System.out.printf("    RETURN 0\n");
+        System.out.printf("RETURN 0\n");
         System.out.printf("END\n");
         argu.varList = null;
         return null;
@@ -333,8 +348,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //translate return
         PigletRet p = n.f10.accept(this, argu1);
-        //PrintIntend(argu1.intend, "");
-        System.out.printf("    RETURN TEMP %d\n", p.result);
+        PrintIntend(argu1.intend, "");
+        System.out.printf("RETURN TEMP %d\n", p.result);
         System.out.printf("END\n");
 
 
@@ -451,20 +466,25 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
             int bias = argu.varList.get(varName);
             //if bias is smaller than 0 means it is in the extended parameter list
             if (bias > 0)
-                System.out.printf("    MOVE TEMP %d TEMP %d\n", bias, p.result);
+            {
+                PrintIntend(argu.intend, "");
+                System.out.printf("MOVE TEMP %d TEMP %d\n", bias, p.result);
+            }
             else
             {
+                PrintIntend(argu.intend, "");
                 int newtemp = newTemp();
-                System.out.printf("    HSTORE TEMP %d %d TEMP %d \n", EXTENDED_PARAM_POINTER, -bias*4, p.result);
+                System.out.printf("HSTORE TEMP %d %d TEMP %d \n", EXTENDED_PARAM_POINTER, -bias*4, p.result);
             }
         }
         //otherwise this belongs to the class
         else
         {
+            PrintIntend(argu.intend,"");
             int bias = getVar(varName, argu.varList, argu.mc);
             if (bias < 0)
                 ErrorPrint.print("Could not solve var %s at (%d, %d)", varName, n.f0.f0.beginLine, n.f0.f0.beginColumn);
-            System.out.printf("    HSTORE TEMP %d %d TEMP %d\n", THIS_POINTER, bias, p.result);
+            System.out.printf("HSTORE TEMP %d %d TEMP %d\n", THIS_POINTER, bias, p.result);
         }
 
         n.f3.accept(this, argu);
@@ -499,23 +519,21 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
             if (bias <= 0)
             {
                 int newtemp = newTemp();
-                System.out.printf("    HLOAD TEMP %d TEMP %d %d\n", newtemp, EXTENDED_PARAM_POINTER, -bias*4);
+                PrintIntend(argu.intend, "");
+                System.out.printf("HLOAD TEMP %d TEMP %d %d\n", newtemp, EXTENDED_PARAM_POINTER, -bias*4);
                 bias = newtemp;
             }
-            int newtemp1 = newTemp();
-            System.out.printf("    MOVE TEMP %d TIMES TEMP %d 4\n", newtemp1, p1.result);
-            System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp1, newtemp1, bias);
-            System.out.printf("    HSTORE TEMP %d 0 TEMP %d\n", newtemp1, p2.result);
+            PrintIntend(argu.intend, "");
+            System.out.printf("HSTORE PLUS TEMP %d TIMES TEMP %d 4 0 TEMP %d\n", bias, p1.result, p2.result);
         }
         else
         {
+            PrintIntend(argu.intend,"");
             int bias = getVar(varName, argu.varList, argu.mc);
             int newtemp = newTemp();
-            System.out.printf("    HLOAD TEMP %d TEMP %d %d\n", newtemp, THIS_POINTER, bias);
-            int newtemp1 = newTemp();
-            System.out.printf("    MOVE TEMP %d TIMES TEMP %d 4\n", newtemp1, p1.result);
-            System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp1, newtemp1, newtemp);
-            System.out.printf("    HSTORE TEMP %d 0 TEMP %d\n", newtemp1, p2.result);
+            System.out.printf("HLOAD TEMP %d TEMP %d %d\n", newtemp, THIS_POINTER, bias);
+            PrintIntend(argu.intend,"");
+            System.out.printf("HSTORE PLUS TEMP %d TIMES TEMP %d 4 0 TEMP %d\n", newtemp, p1.result, p2.result);
         }
         return null;
     }
@@ -534,24 +552,28 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         PigletRet p = n.f2.accept(this, argu);
+        PrintIntend(argu.intend, "");
 
         //set up branch
         String BFalse = newLabel();
-        System.out.printf("    CJUMP TEMP %d %s\n", p.result, BFalse);
+        System.out.printf("CJUMP TEMP %d %s\n", p.result, BFalse);
 
         //translate BTrue statement then jump to next
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
+        PrintIntend(argu.intend, "");
         String SNext = newLabel();
-        System.out.printf("    JUMP %s\n", SNext);
+        System.out.printf("JUMP %s\n", SNext);
 
         //translate BFalse statement
-        System.out.printf("%s  NOOP\n", BFalse);
+        PrintIntend(argu.intend, BFalse);
+        System.out.print("NOOP\n");
         n.f6.accept(this, argu);
 
         //set up Snext label
-        System.out.printf("%s  NOOP\n", SNext);
+        PrintIntend(argu.intend, SNext);
+        System.out.printf("NOOP\n");
         return null;
     }
 
@@ -569,21 +591,25 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //first set up label
         String newlabel = newLabel();
-        System.out.printf("%s  NOOP\n", newlabel);
+        PrintIntend(argu.intend, newlabel);
+        System.out.print("NOOP\n");
         String SNext = newLabel();
 
         //translate expression
         PigletRet p = n.f2.accept(this, argu);
-        System.out.printf("    CJUMP TEMP %d %s\n", p.result, SNext);
+        PrintIntend(argu.intend, "");
+        System.out.printf("CJUMP TEMP %d %s\n", p.result, SNext);
 
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
 
         //jump back
-        System.out.printf("    JUMP %s\n", newlabel);
+        PrintIntend(argu.intend, "");
+        System.out.printf("JUMP %s\n", newlabel);
 
         //set up  next statement
-        System.out.printf("%s  NOOP\n", SNext);
+        PrintIntend(argu.intend, SNext);
+        System.out.printf("NOOP\n");
         return null;
     }
 
@@ -599,7 +625,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         PigletRet p = n.f2.accept(this, argu);
-        System.out.printf("    PRINT TEMP %d\n", p.result);
+        PrintIntend(argu.intend, "");
+        System.out.printf("PRINT TEMP %d\n", p.result);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         return null;
@@ -635,16 +662,20 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //assign a new temp for the result
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d 0\n", newtemp);
 
         //if the first expression is false then shortccut
-        System.out.printf("    CJUMP TEMP %d %s\n", p1.result, newlabel);
+        PrintIntend(argu.intend, "");
+        System.out.printf("CJUMP TEMP %d %s\n", p1.result, newlabel);
         n.f1.accept(this, argu);
 
         //translate second expression the final result is the same as the second
         PigletRet p2 = n.f2.accept(this, argu);
-        System.out.printf("    MOVE TEMP %d TEMP %d\n", newtemp, p2.result);
-        System.out.printf("%s  NOOP\n", newlabel);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d TEMP %d\n", newtemp, p2.result);
+        PrintIntend(argu.intend, newlabel);
+        System.out.print("NOOP\n");
 
         //return the result
         PigletRet p = new PigletRet();
@@ -667,7 +698,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //calculate the result
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d LT TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d LT TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
 
         PigletRet p = new PigletRet();
         p.result = newtemp;
@@ -687,7 +719,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f1.accept(this, argu);
         PigletRet p2 = n.f2.accept(this, argu);
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
         PigletRet p = new PigletRet();
         p.result = newtemp;
         p.type = new MType("Int");
@@ -706,7 +739,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f1.accept(this, argu);
         PigletRet p2 = n.f2.accept(this, argu);
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d MINUS TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d MINUS TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
         PigletRet p = new PigletRet();
         p.result = newtemp;
         p.type = new MType("Int");
@@ -725,7 +759,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f1.accept(this, argu);
         PigletRet p2 = n.f2.accept(this, argu);
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d TIMES TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d TIMES TEMP %d TEMP %d\n", newtemp, p1.result, p2.result);
         PigletRet p = new PigletRet();
         p.result = newtemp;
         p.type = new MType("Int");
@@ -747,10 +782,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         n.f3.accept(this, argu);
 
         int newtemp = newTemp();
-        int newtemp1 = newTemp();
-        System.out.printf("    MOVE TEMP %d TIMES TEMP %d 4\n", newtemp1, p2.result);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp1, p1.result, newtemp1);
-        System.out.printf("    HLOAD TEMP %d TEMP %d 0\n", newtemp, newtemp1);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HLOAD TEMP %d PLUS TEMP %d TIMES TEMP %d 4 0\n", newtemp, p1.result, p2.result);
 
         PigletRet p = new PigletRet();
         p.result = newtemp;
@@ -770,12 +803,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
 
         int newtemp = newTemp();
-        int newtemp1 = newTemp();
-        int newtemp2 = newTemp();
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp2);
-        System.out.printf("    MOVE TEMP %d MINUS TEMP %d 4\n", newtemp1, newtemp2);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp1, p1.result, newtemp1);
-        System.out.printf("    HLOAD TEMP %d TEMP %d 0\n", newtemp, newtemp1);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HLOAD TEMP %d PLUS TEMP %d MINUS 0 4 0\n", newtemp, p1.result);
         PigletRet p = new PigletRet();
         p.result = newtemp;
         p.type = new MType("Int");
@@ -807,40 +836,33 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         ret = mc.getMethod(methodName).getReturnType();
 
         //reach the address of the method
+        PrintIntend(argu.intend, "");
         int newtemp1 = newTemp();
-        System.out.printf("    HLOAD TEMP %d TEMP %d 0\n", newtemp1, p0.result);
+        System.out.printf("HLOAD TEMP %d TEMP %d 0\n", newtemp1, p0.result);
+        PrintIntend(argu.intend, "");
         int newtemp2 = newTemp();
-        System.out.printf("    HLOAD TEMP %d TEMP %d %d\n", newtemp2, newtemp1, method.getSecond());
+        System.out.printf("HLOAD TEMP %d TEMP %d %d\n", newtemp2, newtemp1, method.getSecond());
         int newtemp3 = newTemp();
 
         //if parameters > 15 then prepare extended parameter list
         int newtemp4 = 0;
         argu.paramlength = 0;
         argu.paramtot = paramslength;
-
-        if (paramslength > 0)
+        if (paramslength > 15)
         {
             newtemp4 = newTemp();
+            PrintIntend(argu.intend, "");
+            System.out.printf("MOVE TEMP %d HALLOCATE %d\n", newtemp4, paramslength*4-60);
             argu.paramextend = newtemp4;
-            if (paramslength > 15)
-            {
-                temp += 14;
-                newtemp4 = newTemp();
-                System.out.printf("    MOVE TEMP %d HALLOCATE %d\n", newtemp4, paramslength*4-60);
-                //argu.paramextend = newtemp4;
-            }
-            else
-                temp += paramslength-1;
         }
+        PrintIntend(argu.intend, "");
+
+        //start traslate the method call  the new this   the global class list   the rest of the parameters
+        System.out.printf("MOVE TEMP %d CALL TEMP %d (TEMP %d TEMP %d", newtemp3, newtemp2, p0.result, GLOBAL_CLASS_LIST);
+
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
-
-        //start traslate the method call  the new this   the global class list   the rest of the parameters
-        System.out.printf("    MOVE TEMP %d CALL TEMP %d (TEMP %d TEMP %d", newtemp3, newtemp2, p0.result, GLOBAL_CLASS_LIST);
-
-        for (int i = 0;i<paramslength && i<16;++i)
-            System.out.printf(" TEMP %d", argu.paramextend + i);
         System.out.printf(")\n");
         PigletRet p = new PigletRet();
         p.type = ret;
@@ -855,8 +877,14 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     public PigletRet visit(ExpressionList n, PigletLabels argu)
     {
         //translate the first parameter
-        PigletRet p1 = n.f0.accept(this, argu);
-        System.out.printf("    MOVE TEMP %d TEMP %d\n", argu.paramextend, p1.result);
+        System.out.print(" BEGIN\n");
+        argu.intend += 4;
+        PigletRet p = n.f0.accept(this, argu);
+        PrintIntend(argu.intend, "");
+        System.out.printf("RETURN TEMP %d\n", p.result);
+        argu.intend -= 4;
+        PrintIntend(argu.intend, "");
+        System.out.print("END");
         argu.paramlength += 1;
         n.f1.accept(this, argu);
         return null;
@@ -871,17 +899,35 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
         //translate the rest paramters, if more than 15 put it into the extended parameter list
         if (argu.paramlength < 15)
         {
+            System.out.print(" BEGIN\n");
+            argu.intend += 4;
             n.f0.accept(this, argu);
             PigletRet p = n.f1.accept(this, argu);
-            System.out.printf("    MOVE TEMP %d TEMP %d\n", argu.paramlength + argu.paramextend, p.result);
+            PrintIntend(argu.intend, "");
+            System.out.printf("RETURN TEMP %d\n", p.result);
+            argu.intend -= 4;
+            PrintIntend(argu.intend, "");
+            System.out.print("END");
             argu.paramlength += 1;
         }
         else
         {
+            if (argu.paramlength == 15)
+                System.out.print(" BEGIN\n");
+            argu.intend += 4;
             n.f0.accept(this, argu);
             PigletRet p = n.f1.accept(this, argu);
-            System.out.printf("    HSTORE TEMP %d %d TEMP %d\n", argu.paramextend + 15, (argu.paramlength * 4 - 60), p.result);
+            PrintIntend(argu.intend, "");
+            System.out.printf("HSTORE TEMP %d %d TEMP %d\n", argu.paramextend, (argu.paramlength * 4 - 60), p.result);
             argu.paramlength += 1;
+            if (argu.paramlength == argu.paramtot)
+            {
+                PrintIntend(argu.intend, "");
+                System.out.printf("RETURN TEMP %d\n", argu.paramextend);
+                PrintIntend(argu.intend - 4, "");
+                System.out.print("END");
+            }
+            argu.intend -= 4;
         }
         return null;
     }
@@ -910,16 +956,13 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     {
         n.f0.accept(this, argu);
         String s = n.f0.toString();
+        PrintIntend(argu.intend, "");
         int newtemp = newTemp();
         int val = Integer.parseInt(s);
         if (val>=0)
-            System.out.printf("    MOVE TEMP %d %s\n", newtemp, s);
+            System.out.printf("MOVE TEMP %d %s\n", newtemp, s);
         else
-        {
-            int newtemp1 = newTemp();
-            System.out.printf("    MOVE TEMP %d 0\n", newtemp1);
-            System.out.printf("    MOVE TEMP %d MINUS TEMP %d TEMP %d\n", newtemp, newtemp1, -val);
-        }
+            System.out.printf("MOVE TEMP %d MINUS 0 TEMP %d\n", newtemp, -val);
         PigletRet p = new PigletRet();
         p.type = new MType("Int");
         p.result = newtemp;
@@ -932,8 +975,9 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     public PigletRet visit(TrueLiteral n, PigletLabels argu)
     {
         n.f0.accept(this, argu);
+        PrintIntend(argu.intend, "");
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d 1\n", newtemp);
+        System.out.printf("MOVE TEMP %d 1\n", newtemp);
         PigletRet p = new PigletRet();
         p.type = new MType("Boolean");
         p.result = newtemp;
@@ -947,7 +991,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     {
         n.f0.accept(this, argu);
         int newtemp = newTemp();
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d 0\n", newtemp);
         PigletRet p = new PigletRet();
         p.type = new MType("Boolean");
         p.result = newtemp;
@@ -977,7 +1022,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
                 if (bias <= 0)
                 {
                     int newtemp = newTemp();
-                    System.out.printf("    HLOAD TEMP %d TEMP %d %d\n", newtemp, EXTENDED_PARAM_POINTER, -bias*4);
+                    PrintIntend(argu.intend, "");
+                    System.out.printf("HLOAD TEMP %d TEMP %d %d\n", newtemp, EXTENDED_PARAM_POINTER, -bias*4);
                     p.result = newtemp;
                 }
                 else
@@ -992,7 +1038,8 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
                 int newtemp = newTemp();
                 p.result = newtemp;
                 p.type = argu.mm.getVar(name);
-                System.out.printf("    HLOAD TEMP %d TEMP 0 %d\n", newtemp, getVar(name, argu.varList, argu.mc));
+                PrintIntend(argu.intend, "");
+                System.out.printf("HLOAD TEMP %d TEMP 0 %d\n", newtemp, getVar(name, argu.varList, argu.mc));
             }
         return p;
     }
@@ -1026,37 +1073,35 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //calculate the space needed
         int newtemp1 = newTemp();
-        System.out.printf("    MOVE TEMP %d TIMES TEMP %d 4\n", newtemp1, p0.result);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d 4\n", newtemp1, newtemp1);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d PLUS TIMES TEMP %d 4 4\n", newtemp1, p0.result);
 
         //allocate the space and put its length
         int newtemp2 = newTemp();
-        System.out.printf("    MOVE TEMP %d HALLOCATE TEMP %d\n", newtemp2, newtemp1);
-        System.out.printf("    HSTORE TEMP %d 0 TEMP %d\n", newtemp2, p0.result);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d HALLOCATE TEMP %d\n", newtemp2, newtemp1);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HSTORE TEMP %d 0 TEMP %d\n", newtemp2, p0.result);
 
-        int newtemp4 = newTemp();
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d 4\n", newtemp4, newtemp2);
-
-        //
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp1);
         //initialize the space to 0
         int newtemp3 = newTemp();
-        int newtemp5 = newTemp();
         String newlabel1 = newLabel();
         String newlabel2 = newLabel();
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp3);
-        System.out.printf("%s  MOVE TEMP %d LT TEMP %d TEMP %d\n",newlabel1, newtemp5, newtemp3, p0.result);
-        System.out.printf("    CJUMP TEMP %d %s\n", newtemp5, newlabel2);
-        System.out.printf("    MOVE TEMP %d TIMES TEMP %d 4\n", newtemp5, newtemp3);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp5, newtemp5, newtemp4);
-        System.out.printf("    HSTORE TEMP %d 0 TEMP %d\n", newtemp5, newtemp1);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d 1\n", newtemp3, newtemp3);
-        System.out.printf("    JUMP %s\n", newlabel1);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d 0\n", newtemp3);
+        PrintIntend(argu.intend, newlabel1);
+        System.out.printf("CJUMP LT TEMP %d TEMP %d %s\n", newtemp3, p0.result, newlabel2);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HSTORE PLUS TEMP %d TIMES TEMP %d 4 4 0\n", newtemp2, newtemp3);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d PLUS TEMP %d 1\n", newtemp3, newtemp3);
+        PrintIntend(argu.intend, "");
+        System.out.printf("JUMP %s\n", newlabel1);
 
         //return its type
-
-        System.out.printf("%s  NOOP\n", newlabel2);
-
+        int newtemp4 = newTemp();
+        PrintIntend(argu.intend, newlabel2);
+        System.out.printf("MOVE TEMP %d PLUS TEMP %d 4\n", newtemp4, newtemp2);
         PigletRet p = new PigletRet();
         p.type = new MType("IntArray");
         p.result = newtemp4;
@@ -1084,27 +1129,32 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
 
         //first get the pointer to its method table
         int newtemp0 = newTemp();
-        System.out.printf("    HLOAD TEMP %d TEMP %d %d\n", newtemp0, GLOBAL_CLASS_LIST, ml * 4);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HLOAD TEMP %d TEMP %d %d\n", newtemp0, GLOBAL_CLASS_LIST, ml * 4);
 
         //allocate space
         int newtemp1 = newTemp();
-        System.out.printf("    MOVE TEMP %d HALLOCATE %d\n", newtemp1, size*4 + 4);
-        System.out.printf("    HSTORE TEMP %d 0 TEMP %d\n", newtemp1, newtemp0);
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp0);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d HALLOCATE %d\n", newtemp1, size*4 + 4);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HSTORE TEMP %d 0 TEMP %d\n", newtemp1, newtemp0);
+
         //initialize the space to 0
         int newtemp2 = newTemp();
-        int newtemp3 = newTemp();
         String newlabel1 = newLabel();
         String newlabel2 = newLabel();
-        System.out.printf("    MOVE TEMP %d 0\n", newtemp2);
-        System.out.printf("%s  MOVE TEMP %d LT TEMP %d %d\n", newlabel1, newtemp3, newtemp2, size);
-        System.out.printf("    CJUMP TEMP %d %s\n", newtemp3, newlabel2);
-        System.out.printf("    MOVE TEMP %d TIMES TEMP %d 4\n", newtemp3, newtemp2);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d TEMP %d\n", newtemp3, newtemp1, newtemp3);
-        System.out.printf("    HSTORE TEMP %d 4 TEMP %d\n", newtemp3, newtemp0);
-        System.out.printf("    MOVE TEMP %d PLUS TEMP %d 1\n", newtemp2, newtemp2);
-        System.out.printf("    JUMP %s\n", newlabel1);
-        System.out.printf("%s  NOOP\n", newlabel2);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d 0\n", newtemp2);
+        PrintIntend(argu.intend, newlabel1);
+        System.out.printf("CJUMP LT TEMP %d %d %s\n", newtemp2, size, newlabel2);
+        PrintIntend(argu.intend, "");
+        System.out.printf("HSTORE PLUS TEMP %d TIMES TEMP %d 4 4 0\n", newtemp1, newtemp2);
+        PrintIntend(argu.intend, "");
+        System.out.printf("MOVE TEMP %d PLUS TEMP %d 1\n", newtemp2, newtemp2);
+        PrintIntend(argu.intend, "");
+        System.out.printf("JUMP %s\n", newlabel1);
+        PrintIntend(argu.intend, newlabel2);
+        System.out.printf("NOOP\n");
 
         PigletRet p = new PigletRet();
         p.result = newtemp1;
@@ -1119,10 +1169,9 @@ public class ToSPigletVisitor extends GJDepthFirst<PigletRet,PigletLabels>
     public PigletRet visit(NotExpression n, PigletLabels argu) {
         n.f0.accept(this, argu);
         PigletRet p0 = n.f1.accept(this, argu);
+        PrintIntend(argu.intend, "");
         int newtemp1 = newTemp();
-        int newtemp2 = newTemp();
-        System.out.printf("    MOVE TEMP %d 1\n", newtemp2);
-        System.out.printf("    MOVE TEMP %d MINUS TEMP %d TEMP %d\n", newtemp1, newtemp2,p0.result);
+        System.out.printf("MOVE TEMP %d MINUS 1 TEMP %d\n", newtemp1, p0.result);
         PigletRet p = new PigletRet();
         p.result = newtemp1;
         p.type = new MType("Boolean");

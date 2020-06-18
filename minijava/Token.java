@@ -3,11 +3,8 @@
 /**
  * Describes the input token stream.
  */
-package mini;
-import java.io.*;
-import mini.visitor.*;
-import mini.syntaxtree.*;
-import mini.symbol.*;
+package minijava;
+
 public class Token {
 
   /**

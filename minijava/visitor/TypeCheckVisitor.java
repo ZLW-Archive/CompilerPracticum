@@ -1,8 +1,8 @@
-package mini.visitor;
+package minijava.visitor;
 
-import mini.symbol.*;
-import mini.syntaxtree.*;
-import mini.minijava.ErrorPrint;
+import minijava.symbol.*;
+import minijava.syntaxtree.*;
+import minijava.minijava.ErrorPrint;
 
 public class TypeCheckVisitor extends GJDepthFirst <MType, MType> {
     /*
